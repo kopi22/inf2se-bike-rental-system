@@ -5,6 +5,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.function.BooleanSupplier;
 
+// TODO: test DateRange
+
 public class DateRange {
     private LocalDate start, end;
     
@@ -30,9 +32,15 @@ public class DateRange {
     }
 
     public Boolean overlaps(DateRange other) {
-        // TODO: implement date range intersection checking
-        assert false;
-        return null;
+    	
+    		
+    	if (start.isAfter(other.end) || (other.start.isAfter(end))) {
+    		return false;
+    	}
+    	
+        
+      return true;  
+        
     }
 
     @Override
