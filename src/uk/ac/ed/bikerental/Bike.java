@@ -9,9 +9,11 @@ import java.util.Set;
 public class Bike {
   static private int nextID = 1;
 
-  private int bikeId;
   private BikeType type;
+  private int bikeId;
   private int ownerId;
+ 
+  
   private BikeStatus status;
   private List<Location> storeLocations;
   private List<DateRange> reservationDates;
@@ -39,5 +41,21 @@ public class Bike {
 
   public LocalDate getProductionDate() {
     return productionDate;
+  }
+  
+  public boolean book() {
+	  return false;
+  }
+  
+  public boolean isAvailable(DateRange dateRange) {
+	  return false;
+  }
+  
+  public void returnedToShop() {
+	  
+  }
+  
+  public void returnedToPartner(Location locationOfPartner) {
+	  
   }
 }
