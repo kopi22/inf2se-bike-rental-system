@@ -14,7 +14,7 @@ public class BikeType {
 			new AbstractMap.SimpleEntry<>("BIKE", BigDecimal.valueOf(900.0)))
 			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 	
-	String type;
+	private String type;
 	
 	public BikeType(String type) throws Exception {
 		if (typesToReplacementMapValue.containsKey(type)) {
@@ -26,5 +26,9 @@ public class BikeType {
 
     public BigDecimal getReplacementValue() {
         return typesToReplacementMapValue.get(type);
+    }
+
+    public String getTypeName() {
+	    return type;
     }
 }
