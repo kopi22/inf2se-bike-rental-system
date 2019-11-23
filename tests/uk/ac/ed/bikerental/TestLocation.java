@@ -4,10 +4,41 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.*;
 
 class TestLocation {
-    @BeforeEach
-    void setUp() throws Exception {
-        // TODO: setup some resources before each test
-    }
-    
-    // TODO: put some tests here
+  Location locationA, locationB, locationC, locationD, locationE, locationF;
+
+  @BeforeEach
+  void setUp() throws Exception {
+    locationA = new Location("EH165AJ", "");
+    locationB = new Location("EH185A1", "");
+    locationC = new Location("EH265AJ", "");
+
+    locationD = new Location("G12123", "");
+    locationE = new Location("G99987", "");
+    locationF = new Location("H87609", "");
+  }
+
+  @Test
+  void isNearTo() {
+    // Tests symmetry
+    assertTrue(locationA.isNearTo(locationB));
+
+    // Tests transitivity
+    assertTrue(locationB.isNearTo(locationC));
+    assertTrue(locationA.isNearTo(locationC));
+
+    // Tests reflexivity
+    assertTrue(locationA.isNearTo(locationA));
+  }
+
+  @Test
+  void isNotNearTo() {
+    assertFalse(locationA.isNearTo(locationD));
+    assertFalse(locationD.isNearTo(locationA));
+
+    assertFalse(locationE.isNearTo(locationD));
+    assertFalse(locationD.isNearTo(locationE));
+
+    assertFalse(locationB.isNearTo(locationF));
+    assertFalse(locationF.isNearTo(locationB));
+  }
 }
