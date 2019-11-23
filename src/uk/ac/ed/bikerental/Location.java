@@ -1,8 +1,8 @@
 package uk.ac.ed.bikerental;
 
 /** <h2>The Location type.</h2>
- * <p>Utility class use to represent the location.
- * It uses the address and the postcode in its representation</p>
+ * <p>Utility class used to represent location.
+ * It uses the address and the postcode in its representation.</p>
  * @author Konrad & Linda
  */
 public class Location {
