@@ -9,18 +9,18 @@ import java.util.Map;
 
 public class BikeProvider {
 	
-	String bikeProviderName;
-	Controller controller;
-	int bikeProviderId;
-	String address;
-	int phoneNumber;
-	Map<String, String> openingHours;
-	Collection<Bike> bikes;
-	Collection<Integer> partnerIDs;
-	Map<String, Double> pricingScheme;
-	BigDecimal depositRate;
-	PricingPolicy pricingPolicy;
-	DepositPolicy depositPolicy;
+	private String bikeProviderName;
+	private Controller controller;
+	private int bikeProviderId;
+	private String address;
+	private int phoneNumber;
+	private Map<String, String> openingHours;
+	private Collection<Bike> bikes;
+	private Collection<Integer> partnerIDs;
+	private Map<String, Double> pricingScheme;
+	private BigDecimal depositRate;
+	private PricingPolicy pricingPolicy;
+	private DepositPolicy depositPolicy;
 	
 	public Quote getQuote(Map<Integer, Integer> bikes, DateRange dateRange) {
 		return null;
@@ -31,7 +31,7 @@ public class BikeProvider {
 		return false;
 	}
 	
-	public void returnBike(Bike bike,DateRange dateRange) {
+	public void returnBike(Bike bike) {
 		
 	}
 	

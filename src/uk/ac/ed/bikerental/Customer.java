@@ -9,7 +9,7 @@ public class Customer {
 	private String email;
 	private String firstName;
 	private String secondName;
-	private Location address;
+	private Location addressOfCustomer;
 	private int phoneNumber;
 	private Collection<Integer> bookingIDs;
 	
