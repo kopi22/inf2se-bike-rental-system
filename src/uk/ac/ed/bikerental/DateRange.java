@@ -5,17 +5,19 @@ import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.function.BooleanSupplier;
 
-// TODO: test DateRange
-
-/** The type Date range. */
+/** <h2>The DateRange type.</h2>
+ * <p>Utility class used to represent DateRange.
+ * It uses LocalDate Java class.</p>
+ * @author Konrad & Linda
+ */
 public class DateRange {
     private LocalDate start, end;
 
   /**
    * Instantiates a new Date range.
    *
-   * @param start the start
-   * @param end the end
+   * @param start the start of specified date range
+   * @param end the end of specified date range
    */
   public DateRange(LocalDate start, LocalDate end) {
         this.start = start;
@@ -23,7 +25,7 @@ public class DateRange {
     }
 
   /**
-   * Gets start.
+   * Gets start of date interval.
    *
    * @return the start
    */
@@ -32,7 +34,7 @@ public class DateRange {
     }
 
   /**
-   * Gets end.
+   * Gets end of date interval.
    *
    * @return the end
    */
@@ -41,7 +43,7 @@ public class DateRange {
     }
 
   /**
-   * To years long.
+   * Converts length of interval to years.
    *
    * @return the long
    */
@@ -50,7 +52,7 @@ public class DateRange {
     }
 
   /**
-   * To days long.
+   * Converts length of interval to days.
    *
    * @return the long
    */
@@ -59,9 +61,9 @@ public class DateRange {
     }
 
   /**
-   * Overlaps boolean.
+   * Checks whether two date ranges overlap.
    *
-   * @param other the other
+   * @param other the other 
    * @return the boolean
    */
   public Boolean overlaps(DateRange other) {
