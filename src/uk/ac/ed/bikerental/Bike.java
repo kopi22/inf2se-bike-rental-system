@@ -12,24 +12,20 @@ public class Bike {
   private int bikeId;
   private BikeType type;
   private int ownerId;
-  private BigDecimal originalValue;
   private BikeStatus status;
   private List<Location> storeLocations;
   private List<DateRange> reservationDates;
   private LocalDate productionDate;
 
 
-  public Bike(BikeType type, int ownerId, BigDecimal originalValue, BikeStatus status, LocalDate productionDate) {
+  public Bike(BikeType type, int ownerId, LocalDate productionDate) {
     bikeId = nextID++;
-    BigDecimal depreciationRate;
     this.type = type;
     this.ownerId = ownerId;
-    this.originalValue = originalValue;
-    this.status = status;
+    this.status = BikeStatus.IN_STORE;
     this.productionDate = productionDate;
     this.reservationDates = new ArrayList<>();
     this.storeLocations = new ArrayList<>();
-
   }
 
   public String getType() {
@@ -39,5 +35,9 @@ public class Bike {
 
   public BigDecimal getReplacementValue() {
     return type.getReplacementValue();
+  }
+
+  public LocalDate getProductionDate() {
+    return productionDate;
   }
 }
