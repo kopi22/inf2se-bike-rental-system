@@ -2,6 +2,7 @@ package uk.ac.ed.bikerental;
 
 import java.awt.print.Book;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 public class Controller {
@@ -9,6 +10,13 @@ public class Controller {
     private DeliveryService deliveryService = DeliveryServiceFactory.getDeliveryService();
     private BikeProviderManager bikeProviderManager;
     private Map<Integer, Booking> bookings;
+
+    public Controller(DeliveryService deliveryService,
+        BikeProviderManager bikeProviderManager) {
+        this.deliveryService = deliveryService;
+        this.bikeProviderManager = bikeProviderManager;
+        this.bookings = new HashMap<>();
+    }
 
     public Collection<Quote> getQuotes(Query query) {
         assert query != null;

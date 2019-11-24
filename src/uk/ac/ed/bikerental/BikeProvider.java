@@ -2,6 +2,7 @@ package uk.ac.ed.bikerental;
 
 import java.lang.ModuleLayer.Controller;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -61,8 +62,12 @@ public class BikeProvider {
         if (noBikesToFind > bikes.size()) {
             return null;
         }
-        Map<String, Integer> bikesToFind = Map.copyOf(requestedbikes);
         Iterator<Bike> bikeIterator = bikes.values().iterator();
+
+        Map<String, Integer> bikesToFind = new HashMap<>();
+        for (String bikeType : requestedbikes.keySet()) {
+            bikesToFind.put(bikeType, requestedbikes.get(bikeType));
+        }
 
         Collection<Integer> bikesIds = new HashSet<>();
         BigDecimal totalDeposit = BigDecimal.valueOf(0.0);
@@ -139,5 +144,17 @@ public class BikeProvider {
                 throw new UnsupportedStatusChangeException(bookingStatus.toString());
         }
         orderedBikesIDs.stream().map(bikeId -> bikes.get(bikeId)).forEach(bike -> bike.setStatus(nextBikeStatus));
+    }
+
+    public void addBike(Bike bike) {
+        bikes.put(bike.getBikeId(), bike);
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setRentalPriec(BikeType bikeType, BigDecimal price) {
+        pricingPolicy.setDailyRentalPrice(bikeType, price);
     }
 }

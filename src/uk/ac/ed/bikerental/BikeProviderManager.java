@@ -1,13 +1,14 @@
 package uk.ac.ed.bikerental;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class BikeProviderManager {
 
-    private Map<Integer, BikeProvider> bikeProvidersMap;
+    private Map<Integer, BikeProvider> bikeProvidersMap = new HashMap<>();
 
     public Collection<Quote> getQuotes(Map<String, Integer> bikes, DateRange dateRange, Location searchLocation) {
         Collection<BikeProvider> bikeProviders = getBikeProvidersByLocation(searchLocation);
@@ -43,5 +44,9 @@ public class BikeProviderManager {
 
     public Location getBikeProviderLocation(int bikeProviderId) {
         return bikeProvidersMap.get(bikeProviderId).getAddress();
+    }
+
+    public void addBikeProvider(BikeProvider bikeProvider) {
+        bikeProvidersMap.put(bikeProvider.getId(), bikeProvider);
     }
 }

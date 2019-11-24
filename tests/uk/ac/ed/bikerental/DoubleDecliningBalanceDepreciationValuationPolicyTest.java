@@ -16,12 +16,9 @@ class DoubleDecliningBalanceDepreciationValuationPolicyTest {
 
 
   @BeforeEach
-  void setUp() {
-    try {
-      bikeType = new BikeType("BIKE");
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+  void setUp() throws Exception {
+    BikeType.addType("BIKE", BigDecimal.valueOf(900.0));
+    BikeType bikeType = BikeType.getBikeType("BIKE");
 
     valuationPolicy = new DoubleDecliningBalanceDepreciationValuationPolicy(BigDecimal.valueOf(0.1));
     bike = new Bike(bikeType,
