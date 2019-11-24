@@ -17,5 +17,20 @@ public class Query {
 		this.location=location;
 	}
 
+	public Map<String, Integer> getBikes() {
+		return bikes;
+	}
+
+	public LocalDate getStartDate() {
+		return startDate;
+	}
+
+	public LocalDate getEndDate() {
+		return endDate;
+	}
+
+	public Location getLocation() {
+		return location;
+	}
 }
 

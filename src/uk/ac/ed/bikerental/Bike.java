@@ -7,55 +7,58 @@ import java.util.List;
 import java.util.Set;
 
 public class Bike {
-  static private int nextID = 1;
+    static private int nextID = 1;
 
-  private BikeType type;
-  private int bikeId;
-  private int ownerId;
- 
-  
-  private BikeStatus status;
-  private List<Location> storeLocations;
-  private List<DateRange> reservationDates;
-  private LocalDate productionDate;
+    private BikeType type;
+    private int bikeId;
+    private int ownerId;
 
 
-  public Bike(BikeType type, int ownerId, LocalDate productionDate) {
-    bikeId = nextID++;
-    this.type = type;
-    this.ownerId = ownerId;
-    this.status = BikeStatus.IN_STORE;
-    this.productionDate = productionDate;
-    this.reservationDates = new ArrayList<>();
-    this.storeLocations = new ArrayList<>();
-  }
+    private BikeStatus status;
+    private List<Location> storeLocations;
+    private List<DateRange> reservationDates;
+    private LocalDate productionDate;
 
-  public String getType() {
-    return type.getTypeName();
 
-  }
+    public Bike(BikeType type, int ownerId, LocalDate productionDate) {
+        bikeId = nextID++;
+        this.type = type;
+        this.ownerId = ownerId;
+        this.status = BikeStatus.IN_STORE;
+        this.productionDate = productionDate;
+        this.reservationDates = new ArrayList<>();
+        this.storeLocations = new ArrayList<>();
+    }
 
-  public BigDecimal getReplacementValue() {
-    return type.getReplacementValue();
-  }
+    public String getType() {
+        return type.getTypeName();
+    }
 
-  public LocalDate getProductionDate() {
-    return productionDate;
-  }
-  
-  public boolean book() {
-	  return false;
-  }
-  
-  public boolean isAvailable(DateRange dateRange) {
-	  return false;
-  }
-  
-  public void returnedToShop() {
-	  
-  }
-  
-  public void returnedToPartner(Location locationOfPartner) {
-	  
-  }
+    public BigDecimal getReplacementValue() {
+        return type.getReplacementValue();
+    }
+
+    public LocalDate getProductionDate() {
+        return productionDate;
+    }
+
+    public boolean book() {
+        return false;
+    }
+
+    public boolean isAvailable(DateRange dateRange) {
+        return reservationDates.stream().noneMatch(reservationDateRange -> reservationDateRange.overlaps(dateRange));
+    }
+
+    public void returnedToShop() {
+
+    }
+
+    public void returnedToPartner(Location locationOfPartner) {
+
+    }
+
+    public int getBikeId() {
+        return bikeId;
+    }
 }
