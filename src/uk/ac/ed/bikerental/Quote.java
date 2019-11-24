@@ -19,6 +19,24 @@ public class Quote {
 		this.bikeIDs=bikeIDs;
 		
 	}
-	
 
+	public int getBikeProviderID() {
+		return bikeProviderID;
+	}
+
+	public BigDecimal getDeposit() {
+		return deposit;
+	}
+
+	public BigDecimal getPrice() {
+		return price;
+	}
+
+	public DateRange getDateRange() {
+		return dateRange;
+	}
+
+	public Collection<Integer> getBikeIDs() {
+		return bikeIDs;
+	}
 }

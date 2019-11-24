@@ -12,4 +12,15 @@ public class BookingDetails {
 		this.consentConfirmation=consentConfirmation;
 	}
 
+	public Location getDeliveryAddress() {
+		return deliveryAddress;
+	}
+
+	public int getReturnShopID() {
+		return returnShopID;
+	}
+
+	public boolean isConsentConfirmation() {
+		return consentConfirmation;
+	}
 }

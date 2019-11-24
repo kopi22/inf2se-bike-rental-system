@@ -30,4 +30,18 @@ public class BikeProviderManager {
 
         return quotes;
     }
+
+    public boolean bookBikes(int bikeProviderId, Collection<Integer> bikesIds, DateRange dateRange) {
+        assert bikeProvidersMap.containsKey(bikeProviderId);
+
+        return bikeProvidersMap.get(bikeProviderId).bookBikes(bikesIds, dateRange);
+    }
+
+    public void updateBikesStatuses(int bikeProviderID, Collection<Integer> orderedBikesIDs, BookingStatus bookingStatus) {
+        bikeProvidersMap.get(bikeProviderID).updateBikesStatuses(orderedBikesIDs, bookingStatus);
+    }
+
+    public Location getBikeProviderLocation(int bikeProviderId) {
+        return bikeProvidersMap.get(bikeProviderId).getAddress();
+    }
 }

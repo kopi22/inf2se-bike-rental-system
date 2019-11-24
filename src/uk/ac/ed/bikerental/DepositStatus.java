@@ -1,5 +1,7 @@
 package uk.ac.ed.bikerental;
 
-public class DepositStatus {
-
+public enum DepositStatus {
+    NOT_PAID,
+    PAID,
+    RETURNED
 }

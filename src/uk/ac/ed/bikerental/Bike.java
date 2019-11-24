@@ -42,8 +42,8 @@ public class Bike {
         return productionDate;
     }
 
-    public boolean book() {
-        return false;
+    public void book(DateRange dateRange) {
+        reservationDates.add(dateRange);
     }
 
     public boolean isAvailable(DateRange dateRange) {
@@ -60,5 +60,9 @@ public class Bike {
 
     public int getBikeId() {
         return bikeId;
+    }
+
+    public void setStatus(BikeStatus status) {
+        this.status = status;
     }
 }

@@ -20,7 +20,8 @@ public class BikeProvider {
     private String phoneNumber;
     private Map<String, String> openingHours;
     private Map<Integer, Bike> bikes;
-    private Collection<Integer> partnerIDs;
+    private Collection<Integer> partnerIds;
+    private Collection<Integer> bookingsIds;
     private PricingPolicy pricingPolicy;
     private ValuationPolicy depositPolicy;
 
@@ -32,7 +33,7 @@ public class BikeProvider {
         this.phoneNumber = phoneNumber;
         this.openingHours = openingHours;
         this.bikes = new HashMap<>();
-        this.partnerIDs = new HashSet<>();
+        this.partnerIds = new HashSet<>();
         this.pricingPolicy = pricingPolicy;
         this.depositPolicy = depositPolicy;
     }
@@ -91,8 +92,17 @@ public class BikeProvider {
     }
 
 
-    public boolean bookBikes (Collection<Bike> bikes, DateRange dateRange) {
-        return false;
+    public boolean bookBikes (Collection<Integer> bikesIds, DateRange dateRange) {
+        Collection<Bike> bikesToBook = bikesIds.stream().map(bikeId -> bikes.get(bikeId))
+            .collect(Collectors.toSet());
+
+        if (!bikesToBook.stream().allMatch((bike -> bike.isAvailable(dateRange)))) {
+            return false;
+        }
+
+        bikesToBook.forEach(bike -> bike.book(dateRange));
+
+        return true;
     }
 
     public void bikesReturnedToShop(Collection<Bike> bikes) {
@@ -105,5 +115,29 @@ public class BikeProvider {
 
     public Location getAddress() {
         return address;
+    }
+
+    public void updateBikesStatuses(Collection<Integer> orderedBikesIDs, BookingStatus bookingStatus) {
+        BikeStatus nextBikeStatus;
+        switch (bookingStatus) {
+            case IN_DELIVERY:
+                nextBikeStatus = BikeStatus.IN_DELIVERY;
+                break;
+            case IN_PROGRESS:
+                nextBikeStatus = BikeStatus.RENTED;
+                break;
+            case COMPLETED_PARTNER:
+                nextBikeStatus = BikeStatus.RETURNED_PARTNER;
+                break;
+            case IN_TRANSITION:
+                nextBikeStatus = BikeStatus.IN_TRANSITION;
+                break;
+            case COMPLETED:
+                nextBikeStatus = BikeStatus.IN_STORE;
+                break;
+            default:
+                throw new UnsupportedStatusChangeException(bookingStatus.toString());
+        }
+        orderedBikesIDs.stream().map(bikeId -> bikes.get(bikeId)).forEach(bike -> bike.setStatus(nextBikeStatus));
     }
 }
