@@ -47,6 +47,10 @@ public class Controller {
             quote.getPrice(),
             quote.getDeposit()
         );
+        
+        if (bookingDetails.isConsentConfirmation()==false) {
+        	return null;
+        }
 
         if (bookingDetails.getDeliveryAddress() != null) {
             Location bikeProivderLocation = bikeProviderManager.getBikeProviderLocation(quote.getBikeProviderID());

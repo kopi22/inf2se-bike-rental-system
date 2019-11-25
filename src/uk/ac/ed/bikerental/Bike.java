@@ -30,7 +30,11 @@ public class Bike {
         this.storeLocations = new ArrayList<>();
     }
 
-    public String getType() {
+    public BikeStatus getStatus() {
+		return status;
+	}
+
+	public String getType() {
         return type.getTypeName();
     }
 
@@ -51,10 +55,16 @@ public class Bike {
     }
 
     public void returnedToShop() {
+    	this.setStatus(BikeStatus.IN_STORE);
 
     }
 
-    public void returnedToPartner(Location locationOfPartner) {
+    public boolean returnedToPartner(Location locationOfPartner) {
+    	if (this.storeLocations.get(0)==locationOfPartner) {
+           this.setStatus(BikeStatus.IN_TRANSITION);
+           return true;
+    	}
+    	return false;
 
     }
 
