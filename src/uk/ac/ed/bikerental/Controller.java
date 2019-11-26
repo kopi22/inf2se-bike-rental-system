@@ -70,4 +70,17 @@ public class Controller {
     public void updateBikesStatuses(int bikeProviderID, Collection<Integer> orderedBikesIDs, BookingStatus bookingStatus) {
         bikeProviderManager.updateBikesStatuses(bikeProviderID, orderedBikesIDs, bookingStatus);
     }
+    
+    public void returnOrder(int orderID) {
+    	Booking booking = bookings.get(orderID);
+    	
+    	//return deposit
+    	booking.returnDeposit();
+    	
+    	//bikes processing
+    	int returnShopID = booking.getBikeProviderID();
+    	Collection<Integer> bikeIDs= booking.getOrderedBikesIDs();
+    	int ownerShorpID = booking.getReturnShopID();
+    	bikeProviderManager.returnBikes(returnShopID, bikeIDs, ownerShorpID);
+    }
 }

@@ -110,13 +110,7 @@ public class BikeProvider {
         return true;
     }
 
-    public void bikesReturnedToShop(Collection<Bike> bikes) {
-
-    }
-
-    public void bikesReturnedToPartner(Collection<Bike> bikes, Location partnerLocation) {
-
-    }
+   
 
     public Location getAddress() {
         return address;
@@ -157,4 +151,22 @@ public class BikeProvider {
     public void setRentalPriec(BikeType bikeType, BigDecimal price) {
         pricingPolicy.setDailyRentalPrice(bikeType, price);
     }
+    
+    //return bikes to stock
+    public void returnBikes(Collection<Integer> bikeIDs) {
+    	for (Integer bikeID : bikeIDs) {
+    		bikes.get(bikeID).returnedToShop();
+    	}
+    	
+    }
+    
+    //process partners bikes 
+    public void returnPartnerBikes(Collection<Integer> bikeIDs, Location partnerAddress) {
+    	for (Integer bikeID : bikeIDs) {
+    		bikes.get(bikeID).returnedToPartner(partnerAddress);
+    	}
+    	
+    }
+    
+    	
 }

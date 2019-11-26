@@ -54,25 +54,23 @@ public class Bike {
         return reservationDates.stream().noneMatch(reservationDateRange -> reservationDateRange.overlaps(dateRange));
     }
 
-    public void returnedToShop() {
-    	this.setStatus(BikeStatus.IN_STORE);
-
-    }
-
-    public boolean returnedToPartner(Location locationOfPartner) {
-    	if (this.storeLocations.get(0)==locationOfPartner) {
-           this.setStatus(BikeStatus.IN_TRANSITION);
-           return true;
-    	}
-    	return false;
-
-    }
-
     public int getBikeId() {
         return bikeId;
     }
 
     public void setStatus(BikeStatus status) {
         this.status = status;
+    }
+    
+    //bike returned to original provider
+    public void returnedToShop() {
+    	this.setStatus(BikeStatus.IN_STORE);
+    	
+    }
+    
+    //bike returned to a partner
+    public void returnedToPartner(Location partnerAddress) {
+    	this.setStatus(BikeStatus.RETURNED_PARTNER);
+    	
     }
 }
