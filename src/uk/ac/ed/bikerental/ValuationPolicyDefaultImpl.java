@@ -13,6 +13,7 @@ public class ValuationPolicyDefaultImpl implements ValuationPolicy {
 
     @Override
     public BigDecimal calculateValue(Bike bike, LocalDate date) {
+        assert bike != null;
         return bike.getReplacementValue().multiply(depositRate);
     }
 }

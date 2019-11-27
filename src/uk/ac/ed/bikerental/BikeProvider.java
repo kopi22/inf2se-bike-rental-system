@@ -2,7 +2,6 @@ package uk.ac.ed.bikerental;
 
 import java.lang.ModuleLayer.Controller;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -93,13 +92,16 @@ public class BikeProvider {
     }
 
     private Collection<Bike> getBikesByIds(Collection<Integer> bikeIds) {
-        return bikeIds.stream().map(bikeId -> bikes.get(bikeId)).collect(Collectors.toSet());
+        return bikeIds.stream()
+            .map(bikeId -> bikes.get(bikeId))
+            .collect(Collectors.toSet());
     }
 
 
     public boolean bookBikes (Collection<Integer> bikesIds, DateRange dateRange) {
-        Collection<Bike> bikesToBook = bikesIds.stream().map(bikeId -> bikes.get(bikeId))
-            .collect(Collectors.toSet());
+        Collection<Bike> bikesToBook = bikesIds.stream()
+                                           .map(bikeId -> bikes.get(bikeId))
+                                           .collect(Collectors.toSet());
 
         if (!bikesToBook.stream().allMatch((bike -> bike.isAvailable(dateRange)))) {
             return false;
@@ -109,8 +111,6 @@ public class BikeProvider {
 
         return true;
     }
-
-   
 
     public Location getAddress() {
         return address;
@@ -148,25 +148,34 @@ public class BikeProvider {
         return id;
     }
 
-    public void setRentalPriec(BikeType bikeType, BigDecimal price) {
+    public void setRentalPrice(BikeType bikeType, BigDecimal price) {
         pricingPolicy.setDailyRentalPrice(bikeType, price);
     }
     
     //return bikes to stock
-    public void returnBikes(Collection<Integer> bikeIDs) {
-    	for (Integer bikeID : bikeIDs) {
-    		bikes.get(bikeID).returnedToShop();
-    	}
-    	
+    public void returnBikes(Collection<Integer> bikeIDs, int returnShopId) {
+        if (returnShopId != id && !partnerIds.contains(returnShopId)) {
+            throw new CannotReturnToNotPartnerException(
+                "BikeProvider (id " + id +
+                    ") is not partnered with BikeProvider (id " + returnShopId + ")"
+            );
+        }
+        bikeIDs.stream()
+            .map(bikeId -> bikes.get(bikeId))
+            .forEach(bike -> bike.returnToShop(returnShopId));
     }
-    
-    //process partners bikes 
+
+    public void addPartner(int partnerId) {
+        partnerIds.add(partnerId);
+    }
+/*
+    //process partners bikes
     public void returnPartnerBikes(Collection<Integer> bikeIDs, Location partnerAddress) {
     	for (Integer bikeID : bikeIDs) {
     		bikes.get(bikeID).returnedToPartner(partnerAddress);
     	}
-    	
-    }
+
+    }*/
     
     	
 }

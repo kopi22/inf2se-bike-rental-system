@@ -50,22 +50,8 @@ public class BikeProviderManager {
         bikeProvidersMap.put(bikeProvider.getId(), bikeProvider);
     }
     
-    public void returnBikes(int returnShopID, Collection<Integer>bikeIDs, int ownerID) {
-    if (returnShopID==ownerID) {
-    	 BikeProvider owner = bikeProvidersMap.get(returnShopID);
-    	 owner.returnBikes(bikeIDs);
-    	 }
-    else {
-    	BikeProvider returnShop = bikeProvidersMap.get(returnShopID);
-    	BikeProvider ownerShop = bikeProvidersMap.get(ownerID);
-    	Location addressOfOwner = ownerShop.getAddress();
-    	returnShop.returnPartnerBikes(bikeIDs, addressOfOwner);
-    	
-    }
-   
-    
- 
-    
-    	
+    public void returnBikes(int returnShopID, Collection<Integer> bikeIDs, int ownerID) {
+        BikeProvider bikeProvider = bikeProvidersMap.get(ownerID);
+        bikeProvider.returnBikes(bikeIDs, returnShopID);
     }
 }

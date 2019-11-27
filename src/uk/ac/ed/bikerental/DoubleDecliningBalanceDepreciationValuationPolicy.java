@@ -13,6 +13,7 @@ public class DoubleDecliningBalanceDepreciationValuationPolicy implements Valuat
 
 	@Override
 	public BigDecimal calculateValue(Bike bike, LocalDate reservartionStartDate) {
+		assert bike != null && reservartionStartDate != null;
 
 		LocalDate productionDate = bike.getProductionDate();
 		if (productionDate.isAfter(reservartionStartDate)) {
@@ -20,13 +21,13 @@ public class DoubleDecliningBalanceDepreciationValuationPolicy implements Valuat
 		}
 		BigDecimal bikeAge = BigDecimal.valueOf(new DateRange(productionDate, reservartionStartDate).toYears());
 		BigDecimal replacementValue = bike.getReplacementValue();
-		BigDecimal depreciationRateMulTwo=depreciationRate.multiply(BigDecimal.valueOf(2.0));
+		BigDecimal depreciationRateMulTwo = depreciationRate.multiply(BigDecimal.valueOf(2.0));
 
+		// Implementing the formula for deposit value*(1-2*depreciation)^age
 		BigDecimal result = replacementValue.multiply(
 				(BigDecimal.valueOf(1.0).subtract(depreciationRateMulTwo)
 						.pow(bikeAge.intValue()))
 			);
-
 
 		return result;
 	}

@@ -8,13 +8,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 public class SystemTests {
 
@@ -61,9 +56,9 @@ public class SystemTests {
 		bikeProviderA.addBike(new Bike(bikeType3, bikeProviderA.getId(), LocalDate.of(2018, 5, 19)));
 		bikeProviderA.addBike(new Bike(bikeType3, bikeProviderA.getId(), LocalDate.of(2017, 5, 19)));
 		bikeProviderA.addBike(new Bike(bikeType3, bikeProviderA.getId(), LocalDate.of(2014, 5, 19)));
-		bikeProviderA.setRentalPriec(bikeType1, BigDecimal.valueOf(50.0));
-		bikeProviderA.setRentalPriec(bikeType2, BigDecimal.valueOf(40.0));
-		bikeProviderA.setRentalPriec(bikeType3, BigDecimal.valueOf(30.0));
+		bikeProviderA.setRentalPrice(bikeType1, BigDecimal.valueOf(50.0));
+		bikeProviderA.setRentalPrice(bikeType2, BigDecimal.valueOf(40.0));
+		bikeProviderA.setRentalPrice(bikeType3, BigDecimal.valueOf(30.0));
 
 		controller = new Controller(DeliveryServiceFactory.getDeliveryService(), bikeProviderManager);
 
@@ -163,16 +158,17 @@ public class SystemTests {
 	}
 
 	@Test
-	void returnBikeToProvider() {
+	void returnBikeToOriginalProvider() {
 		bike1.setStatus(BikeStatus.RENTED);
-		bike1.returnedToShop();
+		bike1.returnToShop(bikeProvider1.getId());
 		assertEquals(BikeStatus.IN_STORE, bike1.getStatus());
 	}
 
 	@Test
 	void returnBikeToPartner() {
 		bike1.setStatus(BikeStatus.RENTED);
-		bike1.returnedToPartner(bikeProvider1.getAddress());
+		bikeProvider1.addPartner(bikeProvider2.getId());
+		bike1.returnToShop(bikeProvider2.getId());
 		assertEquals(BikeStatus.IN_TRANSITION, bike1.getStatus());
 	}
 

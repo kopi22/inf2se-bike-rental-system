@@ -47,20 +47,20 @@ public class Controller {
             quote.getPrice(),
             quote.getDeposit()
         );
-        
+
         if (bookingDetails.isConsentConfirmation()==false) {
         	return null;
         }
 
         if (bookingDetails.getDeliveryAddress() != null) {
-            Location bikeProivderLocation = bikeProviderManager.getBikeProviderLocation(quote.getBikeProviderID());
-            deliveryService.scheduleDelivery(booking, bikeProivderLocation, bookingDetails.getDeliveryAddress(), quote.getDateRange().getStart());
+            Location bikeProviderLocation = bikeProviderManager.getBikeProviderLocation(quote.getBikeProviderID());
+            deliveryService.scheduleDelivery(booking, bikeProviderLocation, bookingDetails.getDeliveryAddress(), quote.getDateRange().getStart());
         }
 
         if (bookingDetails.getReturnShopID() != quote.getBikeProviderID()) {
-            Location bikeProivderLocation = bikeProviderManager.getBikeProviderLocation(quote.getBikeProviderID());
+            Location bikeProviderLocation = bikeProviderManager.getBikeProviderLocation(quote.getBikeProviderID());
             Location returnShopLocation = bikeProviderManager.getBikeProviderLocation(bookingDetails.getReturnShopID());
-            deliveryService.scheduleDelivery(booking, bikeProivderLocation, bookingDetails.getDeliveryAddress(), quote.getDateRange().getStart());
+            deliveryService.scheduleDelivery(booking, bikeProviderLocation, bookingDetails.getDeliveryAddress(), quote.getDateRange().getStart());
         }
 
         // TODO: NOTIFY
@@ -70,17 +70,22 @@ public class Controller {
     public void updateBikesStatuses(int bikeProviderID, Collection<Integer> orderedBikesIDs, BookingStatus bookingStatus) {
         bikeProviderManager.updateBikesStatuses(bikeProviderID, orderedBikesIDs, bookingStatus);
     }
-    
+
     public void returnOrder(int orderID) {
-    	Booking booking = bookings.get(orderID);
-    	
-    	//return deposit
-    	booking.returnDeposit();
-    	
-    	//bikes processing
-    	int returnShopID = booking.getBikeProviderID();
-    	Collection<Integer> bikeIDs= booking.getOrderedBikesIDs();
-    	int ownerShorpID = booking.getReturnShopID();
-    	bikeProviderManager.returnBikes(returnShopID, bikeIDs, ownerShorpID);
+        Booking booking = bookings.get(orderID);
+
+        // return deposit
+        booking.returnDeposit();
+
+        // bikes status processing
+        Collection<Integer> bikeIDs= booking.getOrderedBikesIDs();
+        int returnShopID = booking.getReturnShopID();
+        int ownerShopID = booking.getBikeProviderID();
+        bikeProviderManager.returnBikes(returnShopID, bikeIDs, ownerShopID);
+
+        // booking update
+        booking.setBookingStatus(
+            returnShopID == ownerShopID ? BookingStatus.COMPLETED : BookingStatus.COMPLETED_PARTNER
+        );
     }
 }

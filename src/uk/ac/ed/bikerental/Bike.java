@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.TreeMap;
 
 public class Bike {
     static private int nextID = 1;
@@ -15,8 +15,8 @@ public class Bike {
 
 
     private BikeStatus status;
-    private List<Location> storeLocations;
-    private List<DateRange> reservationDates;
+    private List<Integer> locationHistory; // ids of bikeShops in which bike was present
+    private TreeMap<LocalDate, LocalDate> reservationDates;
     private LocalDate productionDate;
 
 
@@ -26,8 +26,8 @@ public class Bike {
         this.ownerId = ownerId;
         this.status = BikeStatus.IN_STORE;
         this.productionDate = productionDate;
-        this.reservationDates = new ArrayList<>();
-        this.storeLocations = new ArrayList<>();
+        this.reservationDates = new TreeMap<>();
+        this.locationHistory = new ArrayList<>();
     }
 
     public BikeStatus getStatus() {
@@ -47,11 +47,21 @@ public class Bike {
     }
 
     public void book(DateRange dateRange) {
-        reservationDates.add(dateRange);
+        reservationDates.put(dateRange.getStart(), dateRange.getEnd());
     }
 
     public boolean isAvailable(DateRange dateRange) {
-        return reservationDates.stream().noneMatch(reservationDateRange -> reservationDateRange.overlaps(dateRange));
+        LocalDate bookingStart =  dateRange.getStart();
+        LocalDate bookingEnd = dateRange.getEnd();
+        LocalDate nextBookingStart = reservationDates.ceilingKey(bookingStart);
+        LocalDate previousBookingEnd = reservationDates.lowerEntry(bookingStart).getValue();
+
+        boolean endsBeforeNextBooking =
+            nextBookingStart == null || bookingEnd.isBefore(nextBookingStart);
+        boolean startAfterPreviousBooking =
+            previousBookingEnd == null || bookingStart.isAfter(previousBookingEnd);
+
+        return startAfterPreviousBooking && endsBeforeNextBooking;
     }
 
     public int getBikeId() {
@@ -61,16 +71,19 @@ public class Bike {
     public void setStatus(BikeStatus status) {
         this.status = status;
     }
-    
-    //bike returned to original provider
-    public void returnedToShop() {
-    	this.setStatus(BikeStatus.IN_STORE);
-    	
+
+    public void returnToShop(int returnShopId) {
+        locationHistory.add(returnShopId);
+        if (returnShopId == ownerId) {
+            status = BikeStatus.IN_STORE;
+        } else {
+            status = BikeStatus.RETURNED_PARTNER;
+        }
     }
     
-    //bike returned to a partner
+   /* //bike returned to a partner
     public void returnedToPartner(Location partnerAddress) {
     	this.setStatus(BikeStatus.RETURNED_PARTNER);
     	
-    }
+    }*/
 }

@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 
 class DoubleDecliningBalanceDepreciationValuationPolicyTest {
 
-  private BikeType bikeType;
   private ValuationPolicy valuationPolicy;
   private Bike bike;
 
@@ -27,7 +26,7 @@ class DoubleDecliningBalanceDepreciationValuationPolicyTest {
   }
 
   @Test
-  void calculateValueBeforeBikeProduction() {
+  void testDepositBeforeBikeProduction() {
     LocalDate date = LocalDate.of(2010, 1, 1);
     BigDecimal value = valuationPolicy.calculateValue(bike, date);
 
@@ -35,10 +34,21 @@ class DoubleDecliningBalanceDepreciationValuationPolicyTest {
   }
 
   @Test
-  void test() {
+  void testDepositCalculation() {
     LocalDate date = LocalDate.of(2018, 9, 1);
     BigDecimal value = valuationPolicy.calculateValue(bike, date);
 
     assertEquals(BigDecimal.valueOf(460.8).stripTrailingZeros(), value.stripTrailingZeros());
+  }
+
+  @Test
+  void testNoBikeProvided() {
+    LocalDate date = LocalDate.of(2018, 9, 1);
+    assertThrows(AssertionError.class, () -> {valuationPolicy.calculateValue(null, date);});
+  }
+
+  @Test
+  void testNoDateProvided() {
+    assertThrows(AssertionError.class, () -> {valuationPolicy.calculateValue(bike, null);});
   }
 }
