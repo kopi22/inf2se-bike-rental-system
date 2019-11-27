@@ -79,14 +79,14 @@ public class Controller {
     public void returnOrder(int orderID) {
         Booking booking = bookings.get(orderID);
 
-        // return deposit
-        booking.returnDeposit();
-
         // bikes status processing
         Collection<Integer> bikeIDs= booking.getOrderedBikesIDs();
         int returnShopID = booking.getReturnShopID();
         int ownerShopID = booking.getBikeProviderID();
         bikeProviderManager.returnBikes(returnShopID, bikeIDs, ownerShopID);
+
+        // return deposit
+        booking.returnDeposit();
 
         // booking update
         booking.setBookingStatus(
