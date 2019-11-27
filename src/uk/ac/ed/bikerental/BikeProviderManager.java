@@ -27,7 +27,7 @@ public class BikeProviderManager {
 
         Collection<Quote> quotes = bikeProviders.stream().map(bikeProvider ->
             bikeProvider.getQuote(bikes, dateRange)
-        ).collect(Collectors.toSet());
+        ).filter(quote -> quote != null).collect(Collectors.toSet());
 
         return quotes;
     }

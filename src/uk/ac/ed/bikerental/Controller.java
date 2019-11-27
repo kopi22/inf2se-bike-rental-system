@@ -33,6 +33,10 @@ public class Controller {
         assert quote != null;
         assert bookingDetails != null;
 
+        if (bookingDetails.isConsentConfirmation() == false) {
+            return null;
+        }
+
         if (!bikeProviderManager.bookBikes(quote.getBikeProviderID(), quote.getBikeIDs(), quote.getDateRange())) {
             return null;
         }
@@ -47,10 +51,6 @@ public class Controller {
             quote.getPrice(),
             quote.getDeposit()
         );
-
-        if (bookingDetails.isConsentConfirmation()==false) {
-        	return null;
-        }
 
         if (bookingDetails.getDeliveryAddress() != null) {
             Location bikeProviderLocation = bikeProviderManager.getBikeProviderLocation(quote.getBikeProviderID());

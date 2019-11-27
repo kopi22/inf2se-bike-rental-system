@@ -56,16 +56,16 @@ public class BikeProvider {
             new ValuationPolicyDefaultImpl(depositRate));
     }
 
-    public Quote getQuote(Map<String, Integer> requestedbikes, DateRange dateRange) {
-        int noBikesToFind = requestedbikes.values().stream().mapToInt(Integer::intValue).sum();
+    public Quote getQuote(Map<String, Integer> requestedBikes, DateRange dateRange) {
+        int noBikesToFind = requestedBikes.values().stream().mapToInt(Integer::intValue).sum();
         if (noBikesToFind > bikes.size()) {
             return null;
         }
         Iterator<Bike> bikeIterator = bikes.values().iterator();
 
         Map<String, Integer> bikesToFind = new HashMap<>();
-        for (String bikeType : requestedbikes.keySet()) {
-            bikesToFind.put(bikeType, requestedbikes.get(bikeType));
+        for (String bikeType : requestedBikes.keySet()) {
+            bikesToFind.put(bikeType, requestedBikes.get(bikeType));
         }
 
         Collection<Integer> bikesIds = new HashSet<>();

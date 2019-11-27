@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 
 public class Bike {
@@ -54,12 +55,12 @@ public class Bike {
         LocalDate bookingStart =  dateRange.getStart();
         LocalDate bookingEnd = dateRange.getEnd();
         LocalDate nextBookingStart = reservationDates.ceilingKey(bookingStart);
-        LocalDate previousBookingEnd = reservationDates.lowerEntry(bookingStart).getValue();
+        Entry<LocalDate, LocalDate> previousBookingEnd = reservationDates.lowerEntry(bookingStart);
 
         boolean endsBeforeNextBooking =
             nextBookingStart == null || bookingEnd.isBefore(nextBookingStart);
         boolean startAfterPreviousBooking =
-            previousBookingEnd == null || bookingStart.isAfter(previousBookingEnd);
+            previousBookingEnd == null || bookingStart.isAfter(previousBookingEnd.getValue());
 
         return startAfterPreviousBooking && endsBeforeNextBooking;
     }

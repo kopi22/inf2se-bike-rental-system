@@ -11,12 +11,15 @@ public class PricingPolicyDefaultImpl implements PricingPolicy {
 
     @Override
     public void setDailyRentalPrice(BikeType bikeType, BigDecimal dailyPrice) {
+        assert dailyPrice != null;
         pricingScheme.put(bikeType.getTypeName(), dailyPrice);
     }
 
     @Override
     public BigDecimal calculatePrice(Collection<Bike> bikes, DateRange duration) {
+        System.out.println(bikes.size());
         return bikes.stream().map(bike -> pricingScheme.get(bike.getType()))
-            .reduce(BigDecimal.valueOf(0), BigDecimal::add).multiply(BigDecimal.valueOf(duration.toDays()));
+            .reduce(BigDecimal.ZERO, BigDecimal::add)
+            .multiply(BigDecimal.valueOf(duration.toDays()));
     }
 }
