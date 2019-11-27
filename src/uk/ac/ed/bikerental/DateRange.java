@@ -3,7 +3,6 @@ package uk.ac.ed.bikerental;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
-import java.util.function.BooleanSupplier;
 
 /** <h2>The DateRange type.</h2>
  * <p>Utility class used to represent DateRange.
@@ -11,7 +10,8 @@ import java.util.function.BooleanSupplier;
  * @author Konrad & Linda
  */
 public class DateRange {
-    private LocalDate start, end;
+    private final LocalDate start;
+    private final LocalDate end;
 
   /**
    * Instantiates a new Date range.
@@ -68,14 +68,9 @@ public class DateRange {
    */
   public Boolean overlaps(DateRange other) {
 
-    	if (start.isAfter(other.end) || (other.start.isAfter(end))) {
-    		return false;
-    	}
-    	
-        
-      return true;  
-        
-    }
+      return !start.isAfter(other.end) && (!other.start.isAfter(end));
+
+  }
 
     @Override
     public int hashCode() {

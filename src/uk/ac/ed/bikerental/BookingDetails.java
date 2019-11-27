@@ -2,9 +2,9 @@ package uk.ac.ed.bikerental;
 
 public class BookingDetails {
 	
-	private Location deliveryAddress;
-	private int returnShopID;
-	private boolean consentConfirmation;
+	private final Location deliveryAddress;
+	private final int returnShopID;
+	private final boolean consentConfirmation;
 	
 	public BookingDetails(Location deliveryAddress,int returnShopID, boolean consentConfirmation ) {
 		this.deliveryAddress=deliveryAddress;

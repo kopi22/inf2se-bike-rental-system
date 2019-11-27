@@ -15,12 +15,12 @@ public class BikeProvider {
 
     private String bikeProviderName;
     private Controller controller;
-    private int id;
+    private final int id;
     private Location address;
     private String phoneNumber;
     private Map<String, String> openingHours;
-    private Map<Integer, Bike> bikes;
-    private Collection<Integer> partnerIds;
+    private final Map<Integer, Bike> bikes;
+    private final Collection<Integer> partnerIds;
     private Collection<Integer> bookingsIds;
     private PricingPolicy pricingPolicy;
     private ValuationPolicy depositPolicy;
@@ -69,8 +69,6 @@ public class BikeProvider {
         }
 
         Collection<Integer> bikesIds = new HashSet<>();
-        BigDecimal totalDeposit = BigDecimal.valueOf(0.0);
-
         for ( ; noBikesToFind > 0; noBikesToFind--) {
             while(true) {
                 if (!bikeIterator.hasNext()) {
@@ -80,13 +78,16 @@ public class BikeProvider {
                 String bikeType = bike.getType();
                 if (bikesToFind.getOrDefault(bikeType, 0) > 0 && bike.isAvailable(dateRange)) {
                     bikesIds.add(bike.getBikeId());
-                    totalDeposit = totalDeposit.add(depositPolicy.calculateValue(bike, dateRange.getStart()));
                     bikesToFind.replace(bikeType, bikesToFind.get(bikeType) - 1);
                     break;
                 }
             }
         }
         BigDecimal totalPrice = pricingPolicy.calculatePrice(getBikesByIds(bikesIds), dateRange);
+        BigDecimal totalDeposit = bikesIds.stream()
+            .map(bikeId -> bikes.get(bikeId))
+            .map(bike -> depositPolicy.calculateValue(bike, dateRange.getStart()))
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         return new Quote(id, totalDeposit, totalPrice, dateRange, bikesIds);
     }

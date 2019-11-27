@@ -13,16 +13,16 @@ public class LinearDepreciationValuationPolicy implements ValuationPolicy {
 
 	// returns the price
 	@Override
-	public BigDecimal calculateValue(Bike bike, LocalDate reservartionStartDate) {
-		assert bike != null && reservartionStartDate != null;
+	public BigDecimal calculateValue(Bike bike, LocalDate reservationsStartDate) {
+		assert bike != null && reservationsStartDate != null;
 
 		LocalDate productionDate = bike.getProductionDate();
 
-		if (productionDate.isAfter(reservartionStartDate)) {
+		if (productionDate.isAfter(reservationsStartDate)) {
 			return null;
 		}
 
-		BigDecimal bikeAge = BigDecimal.valueOf(new DateRange(productionDate, reservartionStartDate).toYears());
+		BigDecimal bikeAge = BigDecimal.valueOf(new DateRange(productionDate, reservationsStartDate).toYears());
 		BigDecimal replacementValue = bike.getReplacementValue();
 
 		// Implementing the formula for discount (age*depreciation*value)

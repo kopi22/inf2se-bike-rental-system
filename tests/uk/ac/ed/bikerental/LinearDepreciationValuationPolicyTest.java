@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -45,11 +44,11 @@ class LinearDepreciationValuationPolicyTest {
   @Test
   void testNoBikeProvided() {
     LocalDate date = LocalDate.of(2018, 9, 1);
-    assertThrows(AssertionError.class, () -> {valuationPolicy.calculateValue(null, date);});
+    assertThrows(AssertionError.class, () -> valuationPolicy.calculateValue(null, date));
   }
 
   @Test
   void testNoDateProvided() {
-    assertThrows(AssertionError.class, () -> {valuationPolicy.calculateValue(bike, null);});
+    assertThrows(AssertionError.class, () -> valuationPolicy.calculateValue(bike, null));
   }
 }

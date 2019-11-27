@@ -1,39 +1,43 @@
 package uk.ac.ed.bikerental;
 
-import java.awt.print.Book;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Controller {
 
-    private DeliveryService deliveryService = DeliveryServiceFactory.getDeliveryService();
-    private BikeProviderManager bikeProviderManager;
-    private Map<Integer, Booking> bookings;
+    private DeliveryService deliveryService;
+    private final BikeProviderManager bikeProviderManager;
+    private final UserManager userManager;
+    private final Map<Integer, Booking> bookings;
 
     public Controller(DeliveryService deliveryService,
-        BikeProviderManager bikeProviderManager) {
+        BikeProviderManager bikeProviderManager,
+        UserManager userManager) {
         this.deliveryService = deliveryService;
         this.bikeProviderManager = bikeProviderManager;
+        this.userManager = userManager;
         this.bookings = new HashMap<>();
     }
 
     public Collection<Quote> getQuotes(Query query) {
         assert query != null;
-        assert query.getStartDate().isBefore(query.getEndDate()) ||
-            query.getStartDate().isEqual(query.getEndDate());
+        // we assume that the rent period is at least one day
+        assert query.getStartDate().isBefore(query.getEndDate());
         assert query.getBikes().size() > 0;
 
-        return bikeProviderManager.getQuotes(query.getBikes(),
+        return bikeProviderManager.getQuotes(
+            query.getBikes(),
             new DateRange(query.getStartDate(), query.getEndDate()),
-            query.getLocation());
+            query.getLocation()
+        );
     }
 
-    public Booking makeBooking(int customerId, Quote quote, BookingDetails bookingDetails) {
+    public Booking makeBooking(int userId, Quote quote, BookingDetails bookingDetails) {
         assert quote != null;
         assert bookingDetails != null;
 
-        if (bookingDetails.isConsentConfirmation() == false) {
+        if (!bookingDetails.isConsentConfirmation()) {
             return null;
         }
 
@@ -52,18 +56,19 @@ public class Controller {
             quote.getDeposit()
         );
 
+        Location bikeProviderLocation = bikeProviderManager.getBikeProviderLocation(quote.getBikeProviderID());
         if (bookingDetails.getDeliveryAddress() != null) {
-            Location bikeProviderLocation = bikeProviderManager.getBikeProviderLocation(quote.getBikeProviderID());
             deliveryService.scheduleDelivery(booking, bikeProviderLocation, bookingDetails.getDeliveryAddress(), quote.getDateRange().getStart());
         }
 
         if (bookingDetails.getReturnShopID() != quote.getBikeProviderID()) {
-            Location bikeProviderLocation = bikeProviderManager.getBikeProviderLocation(quote.getBikeProviderID());
             Location returnShopLocation = bikeProviderManager.getBikeProviderLocation(bookingDetails.getReturnShopID());
-            deliveryService.scheduleDelivery(booking, bikeProviderLocation, bookingDetails.getDeliveryAddress(), quote.getDateRange().getStart());
+            deliveryService.scheduleDelivery(booking, returnShopLocation, bikeProviderLocation, quote.getDateRange().getStart());
         }
 
-        // TODO: NOTIFY
+        bookings.put(booking.getOrderID(), booking);
+        userManager.addBooking(userId, booking.getOrderID());
+
         return booking;
     }
 

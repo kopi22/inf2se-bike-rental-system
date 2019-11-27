@@ -5,10 +5,10 @@ import java.util.Map;
 
 public class Query {
 	
-	private Map<String, Integer> bikes;
-	private LocalDate startDate;
-	private LocalDate endDate;
-	private Location location;
+	private final Map<String, Integer> bikes;
+	private final LocalDate startDate;
+	private final LocalDate endDate;
+	private final Location location;
 	
 	public Query(Map<String, Integer> bikes, LocalDate startDate, LocalDate endDate, Location location) {
 		this.bikes=bikes;

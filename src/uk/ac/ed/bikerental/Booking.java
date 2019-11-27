@@ -8,9 +8,9 @@ import java.util.Collection;
 public class Booking implements Deliverable {
     private static int nextId = 1;
 
-    private Controller controller;
+    private final Controller controller;
 
-    private int bikeProviderID;
+    private final int bikeProviderID;
     public BookingStatus getBookingStatus() {
 		return bookingStatus;
 	}
@@ -55,8 +55,8 @@ public class Booking implements Deliverable {
 		return depositStatus;
 	}
 
-	private int orderID;
-    private Collection<Integer> orderedBikesIDs;
+	private final int orderID;
+    private final Collection<Integer> orderedBikesIDs;
     private DateRange dateRange;
     private int returnShopID;
     private Location deliveryAddress;

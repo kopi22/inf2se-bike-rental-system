@@ -10,15 +10,15 @@ import java.util.TreeMap;
 public class Bike {
     static private int nextID = 1;
 
-    private BikeType type;
-    private int bikeId;
+    private final BikeType type;
+    private final int bikeId;
     private int ownerId;
 
 
     private BikeStatus status;
-    private List<Integer> locationHistory; // ids of bikeShops in which bike was present
-    private TreeMap<LocalDate, LocalDate> reservationDates;
-    private LocalDate productionDate;
+    private final List<Integer> locationHistory; // ids of bikeShops in which bike was present
+    private final TreeMap<LocalDate, LocalDate> reservationDates;
+    private final LocalDate productionDate;
 
 
     public Bike(BikeType type, int ownerId, LocalDate productionDate) {

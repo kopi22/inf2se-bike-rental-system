@@ -5,11 +5,11 @@ import java.util.Collection;
 
 public class Quote {
 	
-	private int bikeProviderID;
-	private BigDecimal deposit;
-	private BigDecimal price;
-	private DateRange dateRange;
-	private Collection<Integer> bikeIDs;
+	private final int bikeProviderID;
+	private final BigDecimal deposit;
+	private final BigDecimal price;
+	private final DateRange dateRange;
+	private final Collection<Integer> bikeIDs;
 	
 	public Quote(int bikeProviderID, BigDecimal deposit, BigDecimal price,DateRange dateRange, Collection<Integer> bikeIDs ) {
 		this.bikeProviderID=bikeProviderID;

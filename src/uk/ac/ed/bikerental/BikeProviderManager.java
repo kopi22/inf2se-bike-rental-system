@@ -3,12 +3,12 @@ package uk.ac.ed.bikerental;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class BikeProviderManager {
 
-    private Map<Integer, BikeProvider> bikeProvidersMap = new HashMap<>();
+    private final Map<Integer, BikeProvider> bikeProvidersMap = new HashMap<>();
 
     public Collection<Quote> getQuotes(Map<String, Integer> bikes, DateRange dateRange, Location searchLocation) {
         Collection<BikeProvider> bikeProviders = getBikeProvidersByLocation(searchLocation);
@@ -25,11 +25,10 @@ public class BikeProviderManager {
     // modifies the supplied bikeProviders collection
     private Collection<Quote> getQuotesForDateRange(Collection<BikeProvider> bikeProviders, Map<String, Integer> bikes, DateRange dateRange) {
 
-        Collection<Quote> quotes = bikeProviders.stream().map(bikeProvider ->
-            bikeProvider.getQuote(bikes, dateRange)
-        ).filter(quote -> quote != null).collect(Collectors.toSet());
-
-        return quotes;
+        return bikeProviders.stream()
+            .map(bikeProvider -> bikeProvider.getQuote(bikes, dateRange))
+            .filter(Objects::nonNull)
+            .collect(Collectors.toSet());
     }
 
     public boolean bookBikes(int bikeProviderId, Collection<Integer> bikesIds, DateRange dateRange) {

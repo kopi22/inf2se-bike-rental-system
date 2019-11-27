@@ -5,7 +5,7 @@ import java.time.LocalDate;
 
 public class ValuationPolicyDefaultImpl implements ValuationPolicy {
 
-    BigDecimal depositRate;
+    final BigDecimal depositRate;
 
     public ValuationPolicyDefaultImpl(BigDecimal depositRate) {
         this.depositRate = depositRate;

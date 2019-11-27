@@ -44,11 +44,11 @@ class DoubleDecliningBalanceDepreciationValuationPolicyTest {
   @Test
   void testNoBikeProvided() {
     LocalDate date = LocalDate.of(2018, 9, 1);
-    assertThrows(AssertionError.class, () -> {valuationPolicy.calculateValue(null, date);});
+    assertThrows(AssertionError.class, () -> valuationPolicy.calculateValue(null, date));
   }
 
   @Test
   void testNoDateProvided() {
-    assertThrows(AssertionError.class, () -> {valuationPolicy.calculateValue(bike, null);});
+    assertThrows(AssertionError.class, () -> valuationPolicy.calculateValue(bike, null));
   }
 }

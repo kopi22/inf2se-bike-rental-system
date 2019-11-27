@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class PricingPolicyDefaultImpl implements PricingPolicy {
 
-    private Map<String, BigDecimal> pricingScheme = new HashMap<>();
+    private final Map<String, BigDecimal> pricingScheme = new HashMap<>();
 
     @Override
     public void setDailyRentalPrice(BikeType bikeType, BigDecimal dailyPrice) {

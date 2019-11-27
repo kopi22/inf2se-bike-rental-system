@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BikeType {
-	private static Map<String, BigDecimal> typesToReplacementMapValue = new HashMap<>();
+	private static final Map<String, BigDecimal> typesToReplacementMapValue = new HashMap<>();
 
-	private String type;
+	private final String type;
 
 	private BikeType(String type) {
 		this.type = type;
