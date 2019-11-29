@@ -11,7 +11,7 @@ public class LinearDepreciationValuationPolicy implements ValuationPolicy {
 		this.depreciationRate = depreciationRate;
 	}
 
-	// returns the price
+	// returns null if cannot calculate the price
 	@Override
 	public BigDecimal calculateValue(Bike bike, LocalDate reservationsStartDate) {
 		assert bike != null && reservationsStartDate != null;

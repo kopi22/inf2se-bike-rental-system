@@ -33,6 +33,7 @@ public class Controller {
         );
     }
 
+    // returns null if booking is unsuccessful
     public Booking makeBooking(int userId, Quote quote, BookingDetails bookingDetails) {
         assert quote != null;
         assert bookingDetails != null;
@@ -41,6 +42,7 @@ public class Controller {
             return null;
         }
 
+        // bikeProviderManager.bookBikes returns false if booking was unsuccessful
         if (!bikeProviderManager.bookBikes(quote.getBikeProviderID(), quote.getBikeIDs(), quote.getDateRange())) {
             return null;
         }
@@ -57,21 +59,25 @@ public class Controller {
         );
 
         Location bikeProviderLocation = bikeProviderManager.getBikeProviderLocation(quote.getBikeProviderID());
+        // deliveryAddress is null if no delivery was requested
         if (bookingDetails.getDeliveryAddress() != null) {
             deliveryService.scheduleDelivery(booking, bikeProviderLocation, bookingDetails.getDeliveryAddress(), quote.getDateRange().getStart());
         }
 
         if (bookingDetails.getReturnShopID() != quote.getBikeProviderID()) {
             Location returnShopLocation = bikeProviderManager.getBikeProviderLocation(bookingDetails.getReturnShopID());
-            deliveryService.scheduleDelivery(booking, returnShopLocation, bikeProviderLocation, quote.getDateRange().getStart());
+            deliveryService.scheduleDelivery(booking, returnShopLocation, bikeProviderLocation, quote.getDateRange().getEnd());
         }
 
+        // register bookings
         bookings.put(booking.getOrderID(), booking);
         userManager.addBooking(userId, booking.getOrderID());
+        bikeProviderManager.addBooking(quote.getBikeProviderID(), booking.getOrderID());
 
         return booking;
     }
 
+    // updates the bike statuses based on the booking status
     public void updateBikesStatuses(int bikeProviderID, Collection<Integer> orderedBikesIDs, BookingStatus bookingStatus) {
         bikeProviderManager.updateBikesStatuses(bikeProviderID, orderedBikesIDs, bookingStatus);
     }

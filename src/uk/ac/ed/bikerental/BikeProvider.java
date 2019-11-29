@@ -7,8 +7,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
-
 
 public class BikeProvider {
     private static int nextId = 1;
@@ -25,8 +25,11 @@ public class BikeProvider {
     private PricingPolicy pricingPolicy;
     private ValuationPolicy depositPolicy;
 
+    // if pricing/deposit policy is not provided, then default is used
     public BikeProvider(String bikeProviderName, Location address, String phoneNumber,
         Map<String, String> openingHours, PricingPolicy pricingPolicy, ValuationPolicy depositPolicy) {
+        assert Objects.nonNull(pricingPolicy) &&  Objects.nonNull(depositPolicy);
+
         this.bikeProviderName = bikeProviderName;
         this.id = nextId++;
         this.address = address;
@@ -57,19 +60,23 @@ public class BikeProvider {
     }
 
     public Quote getQuote(Map<String, Integer> requestedBikes, DateRange dateRange) {
-        int noBikesToFind = requestedBikes.values().stream().mapToInt(Integer::intValue).sum();
-        if (noBikesToFind > bikes.size()) {
+        int numBikesToFind = requestedBikes.values().stream().mapToInt(Integer::intValue).sum();
+        if (numBikesToFind > bikes.size()) {
             return null;
         }
+
         Iterator<Bike> bikeIterator = bikes.values().iterator();
 
+        // copy the map so we can work on it without modifying the original
         Map<String, Integer> bikesToFind = new HashMap<>();
         for (String bikeType : requestedBikes.keySet()) {
             bikesToFind.put(bikeType, requestedBikes.get(bikeType));
         }
 
         Collection<Integer> bikesIds = new HashSet<>();
-        for ( ; noBikesToFind > 0; noBikesToFind--) {
+        // for number of bikesToFind
+        for ( ; numBikesToFind > 0; numBikesToFind--) {
+            // while(true) since we want to iterate over the bikes which are not available
             while(true) {
                 if (!bikeIterator.hasNext()) {
                     return null;
@@ -77,15 +84,18 @@ public class BikeProvider {
                 Bike bike = bikeIterator.next();
                 String bikeType = bike.getType();
                 if (bikesToFind.getOrDefault(bikeType, 0) > 0 && bike.isAvailable(dateRange)) {
+                    // add bikeId for the bikes in the quote
                     bikesIds.add(bike.getBikeId());
+                    // decrease number of desired bikes of given type
                     bikesToFind.replace(bikeType, bikesToFind.get(bikeType) - 1);
+                    // break to decrease numBikesToFind
                     break;
                 }
             }
         }
         BigDecimal totalPrice = pricingPolicy.calculatePrice(getBikesByIds(bikesIds), dateRange);
         BigDecimal totalDeposit = bikesIds.stream()
-            .map(bikeId -> bikes.get(bikeId))
+            .map(bikes::get)
             .map(bike -> depositPolicy.calculateValue(bike, dateRange.getStart()))
             .reduce(BigDecimal.ZERO, BigDecimal::add);
 
@@ -94,14 +104,14 @@ public class BikeProvider {
 
     private Collection<Bike> getBikesByIds(Collection<Integer> bikeIds) {
         return bikeIds.stream()
-            .map(bikeId -> bikes.get(bikeId))
+            .map(bikes::get)
             .collect(Collectors.toSet());
     }
 
 
     public boolean bookBikes (Collection<Integer> bikesIds, DateRange dateRange) {
         Collection<Bike> bikesToBook = bikesIds.stream()
-                                           .map(bikeId -> bikes.get(bikeId))
+                                           .map(bikes::get)
                                            .collect(Collectors.toSet());
 
         if (!bikesToBook.stream().allMatch((bike -> bike.isAvailable(dateRange)))) {
@@ -119,6 +129,7 @@ public class BikeProvider {
 
     public void updateBikesStatuses(Collection<Integer> orderedBikesIDs, BookingStatus bookingStatus) {
         BikeStatus nextBikeStatus;
+        // update the status of the bike based on the booking status
         switch (bookingStatus) {
             case IN_DELIVERY:
                 nextBikeStatus = BikeStatus.IN_DELIVERY;
@@ -138,7 +149,7 @@ public class BikeProvider {
             default:
                 throw new UnsupportedStatusChangeException(bookingStatus.toString());
         }
-        orderedBikesIDs.stream().map(bikeId -> bikes.get(bikeId)).forEach(bike -> bike.setStatus(nextBikeStatus));
+        orderedBikesIDs.stream().map(bikes::get).forEach(bike -> bike.setStatus(nextBikeStatus));
     }
 
     public void addBike(Bike bike) {
@@ -155,6 +166,7 @@ public class BikeProvider {
     
     //return bikes to stock
     public void returnBikes(Collection<Integer> bikeIDs, int returnShopId) {
+        // check if return shop is partnered with bikeProvider
         if (returnShopId != id && !partnerIds.contains(returnShopId)) {
             throw new CannotReturnToNotPartnerException(
                 "BikeProvider (id " + id +
@@ -162,21 +174,15 @@ public class BikeProvider {
             );
         }
         bikeIDs.stream()
-            .map(bikeId -> bikes.get(bikeId))
+            .map(bikes::get)
             .forEach(bike -> bike.returnToShop(returnShopId));
     }
 
     public void addPartner(int partnerId) {
         partnerIds.add(partnerId);
     }
-/*
-    //process partners bikes
-    public void returnPartnerBikes(Collection<Integer> bikeIDs, Location partnerAddress) {
-    	for (Integer bikeID : bikeIDs) {
-    		bikes.get(bikeID).returnedToPartner(partnerAddress);
-    	}
 
-    }*/
-    
-    	
+    public void addBooking(int orderID) {
+        bookingsIds.add(orderID);
+    }
 }

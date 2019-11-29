@@ -52,11 +52,14 @@ public class Bike {
     }
 
     public boolean isAvailable(DateRange dateRange) {
+        // Using the tree structure to check the availability in the log(n) time
+        // by comparing the bookings just before and just after
         LocalDate bookingStart =  dateRange.getStart();
         LocalDate bookingEnd = dateRange.getEnd();
         LocalDate nextBookingStart = reservationDates.ceilingKey(bookingStart);
         Entry<LocalDate, LocalDate> previousBookingEnd = reservationDates.lowerEntry(bookingStart);
 
+        // if null then no bookings before/after
         boolean endsBeforeNextBooking =
             nextBookingStart == null || bookingEnd.isBefore(nextBookingStart);
         boolean startAfterPreviousBooking =

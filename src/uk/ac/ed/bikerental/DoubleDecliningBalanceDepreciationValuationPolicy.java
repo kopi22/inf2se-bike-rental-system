@@ -11,6 +11,7 @@ public class DoubleDecliningBalanceDepreciationValuationPolicy implements Valuat
         this.depreciationRate = depreciationRate;
     }
 
+    // returns null if cannot calculate the price
     @Override
     public BigDecimal calculateValue(Bike bike, LocalDate reservationStartDate) {
         assert bike != null && reservationStartDate != null;

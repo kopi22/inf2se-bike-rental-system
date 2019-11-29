@@ -8,9 +8,11 @@ import java.util.stream.Collectors;
 
 public class BikeProviderManager {
 
+    // map from id to bike provider object
     private final Map<Integer, BikeProvider> bikeProvidersMap = new HashMap<>();
 
-    public Collection<Quote> getQuotes(Map<String, Integer> bikes, DateRange dateRange, Location searchLocation) {
+    public Collection<Quote> getQuotes(Map<String, Integer> bikes, DateRange dateRange,
+        Location searchLocation) {
         Collection<BikeProvider> bikeProviders = getBikeProvidersByLocation(searchLocation);
         return getQuotesForDateRange(bikeProviders, bikes, dateRange);
     }
@@ -23,7 +25,8 @@ public class BikeProviderManager {
     }
 
     // modifies the supplied bikeProviders collection
-    private Collection<Quote> getQuotesForDateRange(Collection<BikeProvider> bikeProviders, Map<String, Integer> bikes, DateRange dateRange) {
+    private Collection<Quote> getQuotesForDateRange(Collection<BikeProvider> bikeProviders,
+        Map<String, Integer> bikes, DateRange dateRange) {
 
         return bikeProviders.stream()
             .map(bikeProvider -> bikeProvider.getQuote(bikes, dateRange))
@@ -37,7 +40,8 @@ public class BikeProviderManager {
         return bikeProvidersMap.get(bikeProviderId).bookBikes(bikesIds, dateRange);
     }
 
-    public void updateBikesStatuses(int bikeProviderID, Collection<Integer> orderedBikesIDs, BookingStatus bookingStatus) {
+    public void updateBikesStatuses(int bikeProviderID, Collection<Integer> orderedBikesIDs,
+        BookingStatus bookingStatus) {
         bikeProvidersMap.get(bikeProviderID).updateBikesStatuses(orderedBikesIDs, bookingStatus);
     }
 
@@ -52,5 +56,9 @@ public class BikeProviderManager {
     public void returnBikes(int returnShopID, Collection<Integer> bikeIDs, int ownerID) {
         BikeProvider bikeProvider = bikeProvidersMap.get(ownerID);
         bikeProvider.returnBikes(bikeIDs, returnShopID);
+    }
+
+    public void addBooking(int bikeProviderID, int orderID) {
+        bikeProvidersMap.get(bikeProviderID).addBooking(orderID);
     }
 }
