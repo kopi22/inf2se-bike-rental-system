@@ -35,7 +35,7 @@ public class Bike {
 		return status;
 	}
 
-	public String getType() {
+	  public String getType() {
         return type.getTypeName();
     }
 
@@ -81,10 +81,4 @@ public class Bike {
             status = BikeStatus.RETURNED_PARTNER;
         }
     }
-    
-   /* //bike returned to a partner
-    public void returnedToPartner(Location partnerAddress) {
-    	this.setStatus(BikeStatus.RETURNED_PARTNER);
-    	
-    }*/
 }

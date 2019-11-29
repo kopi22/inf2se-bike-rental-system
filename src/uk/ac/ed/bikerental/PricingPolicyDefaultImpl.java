@@ -18,7 +18,8 @@ public class PricingPolicyDefaultImpl implements PricingPolicy {
     @Override
     public BigDecimal calculatePrice(Collection<Bike> bikes, DateRange duration) {
         System.out.println(bikes.size());
-        return bikes.stream().map(bike -> pricingScheme.get(bike.getType()))
+        return bikes.stream()
+            .map(bike -> pricingScheme.get(bike.getType()))
             .reduce(BigDecimal.ZERO, BigDecimal::add)
             .multiply(BigDecimal.valueOf(duration.toDays()));
     }

@@ -7,7 +7,7 @@ public class LinearDepreciationValuationPolicy implements ValuationPolicy {
 
 	private BigDecimal depreciationRate;
 
-	LinearDepreciationValuationPolicy(BigDecimal depreciationRate) {
+	public LinearDepreciationValuationPolicy(BigDecimal depreciationRate) {
 		this.depreciationRate = depreciationRate;
 	}
 

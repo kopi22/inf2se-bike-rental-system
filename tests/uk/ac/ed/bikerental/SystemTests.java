@@ -1,6 +1,7 @@
 package uk.ac.ed.bikerental;
 
 import java.util.Collection;
+import java.util.HashSet;
 import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,6 +16,8 @@ public class SystemTests {
 
     // attributes used for testing
     Controller controller;
+    BikeProviderManager bikeProviderManager;
+    UserManager userManager;
     BikeProvider bikeProvider1;
     BikeProvider bikeProvider2;
     Bike bike1;
@@ -40,7 +43,7 @@ public class SystemTests {
         bikeType2 = BikeType.getBikeType("Bike2");
         bikeType3 = BikeType.getBikeType("Bike3");
 
-        BikeProviderManager bikeProviderManager = new BikeProviderManager();
+        bikeProviderManager = new BikeProviderManager();
 
         BikeProvider bikeProviderA = new BikeProvider("", new Location("EH165AJ", ""), "",
             new HashMap<>(), BigDecimal.valueOf(0.1));
@@ -71,11 +74,11 @@ public class SystemTests {
 
         query1 = new Query(new HashMap<>(), LocalDate.of(2019, 6, 28), LocalDate.of(2019, 7, 28),
             new Location("EH254GU", "St Leonards"));
-        user1 = new User(1, "henryk@gmail.com", "Henryk", "Hobohobo", new Location("EH165AJ", "Akababa"),
+        user1 = new User("henryk@gmail.com", "Henryk", "Hobohobo", new Location("EH165AJ", "Akababa"),
             "09875456796");
-        user2 = new User(2, "Alica@gmail.com", "Alica", "Persey", new Location("EH876TZ", "Mayeston"),
+        user2 = new User("Alica@gmail.com", "Alica", "Persey", new Location("EH876TZ", "Mayeston"),
             "0905666080");
-        UserManager userManager = new UserManager();
+        userManager = new UserManager();
         userManager.addUser(user1);
         userManager.addUser(user2);
 
@@ -87,93 +90,189 @@ public class SystemTests {
         controller = new Controller(DeliveryServiceFactory.getDeliveryService(), bikeProviderManager, userManager);
     }
 
-    // TODO: Write system tests covering the three main use cases
+    @Nested
+    @DisplayName("Tests for Get Quotes Use Case")
+    class GetQuotesUseCase {
 
-    @Test
-    void testOutsideRange() {
-        Collection<Quote> quotes = controller.getQuotes(new Query(new HashMap<>() {
-            {
-                put("Bike2", 1);
-            }
-        }, LocalDate.of(2010, 6, 1), LocalDate.of(2010, 6, 3), new Location("G12312", "")));
-        assertTrue(quotes.isEmpty());
+        @Test
+        void testOutsideRange() {
+            Collection<Quote> quotes = controller.getQuotes(new Query(new HashMap<>() {
+                {
+                    put("Bike2", 1);
+                }
+            }, LocalDate.of(2010, 6, 1), LocalDate.of(2010, 6, 3), new Location("G12312", "")));
+            assertTrue(quotes.isEmpty());
+        }
+
+        @Test
+        void testInsideRangeOneBikeType() {
+            Collection<Quote> quotes = controller.getQuotes(new Query(new HashMap<>() {
+                {
+                    put("Bike2", 1);
+                }
+            }, LocalDate.of(2010, 6, 1), LocalDate.of(2010, 6, 3), new Location("EH165AY", "")));
+            assertEquals(2, quotes.size());
+            assertEquals(BigDecimal.valueOf(80.0).stripTrailingZeros(),
+                ((Quote) (quotes.toArray()[0])).getPrice().stripTrailingZeros());
+            assertEquals(BigDecimal.valueOf(140.0).stripTrailingZeros(),
+                ((Quote) (quotes.toArray()[0])).getDeposit().stripTrailingZeros());
+        }
+
+        @Test
+        void testInsideRangeOneTwoTypes() {
+            Collection<Quote> quotes = controller.getQuotes(new Query(new HashMap<>() {
+                {
+                    put("Bike2", 1);
+                    put("Bike3", 2);
+                }
+            }, LocalDate.of(2010, 6, 1), LocalDate.of(2010, 6, 3), new Location("EH165AY", "")));
+            assertEquals(1, quotes.size());
+            assertEquals(BigDecimal.valueOf(200.0).stripTrailingZeros(),
+                ((Quote) (quotes.toArray()[0])).getPrice().stripTrailingZeros());
+            assertEquals(BigDecimal.valueOf(300.0).stripTrailingZeros(),
+                ((Quote) (quotes.toArray()[0])).getDeposit().stripTrailingZeros());
+        }
     }
 
-    @Test
-    void testInsideRangeOneBikeType() {
-        Collection<Quote> quotes = controller.getQuotes(new Query(new HashMap<>() {
-            {
-                put("Bike2", 1);
-            }
-        }, LocalDate.of(2010, 6, 1), LocalDate.of(2010, 6, 3), new Location("EH165AY", "")));
-        assertEquals(2, quotes.size());
-        assertEquals(BigDecimal.valueOf(80.0).stripTrailingZeros(),
-            ((Quote) (quotes.toArray()[0])).getPrice().stripTrailingZeros());
-        assertEquals(BigDecimal.valueOf(140.0).stripTrailingZeros(),
-            ((Quote) (quotes.toArray()[0])).getDeposit().stripTrailingZeros());
+    @Nested
+    @DisplayName("Tests for Make Booking Use Case")
+    class MakeBookingUseCase {
+
+        Collection<Integer> bikeIDs;
+        Quote quote1;
+
+        @BeforeEach
+        void beforeEach() {
+            bikeIDs = new ArrayList<>() {{
+                add(bike1.getBikeId());
+            }};
+            quote1 = new Quote(
+                bikeProvider1.getId(),
+                bike1.getReplacementValue(),
+                new BigDecimal(120),
+                new DateRange(query1.getStartDate(), query1.getEndDate()),
+                bikeIDs);
+        }
+
+        @Test
+        void makeBookingTest() {
+            // data for creating booking
+            BookingDetails details1 = new BookingDetails(user1.getAddressOfCustomer(), bikeProvider1.getId(), true);
+
+            Booking actual = controller.makeBooking(user1.getUserId(), quote1, details1);
+            Booking expected = new Booking(controller, bikeProvider1.getId(), bikeIDs,
+                new DateRange(query1.getStartDate(), query1.getEndDate()), bikeProvider1.getId(),
+                user1.getAddressOfCustomer(), new BigDecimal(120), bike1.getReplacementValue());
+            assertEquals(expected.getBikeProviderID(), actual.getBikeProviderID());
+            assertEquals(expected.getReturnShopID(), actual.getReturnShopID());
+            assertEquals(expected.getAmountPaid(), actual.getAmountPaid());
+            assertEquals(expected.getDeposit(), actual.getDeposit());
+            assertEquals(expected.getDeliveryAddress(), actual.getDeliveryAddress());
+            assertEquals(expected.getDateRange(), actual.getDateRange());
+            assertEquals(DepositStatus.NOT_PAID, actual.getDepositStatus());
+            assertEquals(BookingStatus.BOOKED, actual.getBookingStatus());
+            assertArrayEquals(expected.getOrderedBikesIDs().toArray(), actual.getOrderedBikesIDs().toArray());
+        }
+
+        @Test
+        void makeBookingWithoutConsentTest() {
+            // data for creating booking
+            BookingDetails details1 = new BookingDetails(user1.getAddressOfCustomer(), bikeProvider1.getId(), false);
+
+            Booking booking = controller.makeBooking(user1.getUserId(), quote1, details1);
+            assertNull(booking);
+        }
+
+        @Test
+        void dontLetBookSameQuoteTwice() {
+            BookingDetails details1 = new BookingDetails(user1.getAddressOfCustomer(), bikeProvider1.getId(), false);
+
+            controller.makeBooking(user1.getUserId(), quote1, details1);
+            assertNull(controller.makeBooking(user1.getUserId(), quote1, details1));
+        }
     }
 
-    @Test
-    void testInsideRangeOneTwoTypes() {
-        Collection<Quote> quotes = controller.getQuotes(new Query(new HashMap<>() {
-            {
-                put("Bike2", 1);
-                put("Bike3", 2);
-            }
-        }, LocalDate.of(2010, 6, 1), LocalDate.of(2010, 6, 3), new Location("EH165AY", "")));
-        assertEquals(1, quotes.size());
-        assertEquals(BigDecimal.valueOf(200.0).stripTrailingZeros(),
-            ((Quote) (quotes.toArray()[0])).getPrice().stripTrailingZeros());
-        assertEquals(BigDecimal.valueOf(300.0).stripTrailingZeros(),
-            ((Quote) (quotes.toArray()[0])).getDeposit().stripTrailingZeros());
-    }
+    @Nested
+    @DisplayName("Tests for Return Bike Use Case")
+    class ReturnBikeUseCase {
 
-    @Test
-    void makeBookingTest() {
-        BookingDetails details1 = new BookingDetails(user1.getAddressOfCustomer(), bikeProvider1.getId(), true);
-        Collection<Integer> bikeIDs = new ArrayList<>();
-        bikeIDs.add(bike1.getBikeId());
-        Quote quote1 = new Quote(bikeProvider1.getId(), bike1.getReplacementValue(), new BigDecimal(120),
-            new DateRange(query1.getStartDate(), query1.getEndDate()), bikeIDs);
+        Quote quote;
+        BikeProvider bikeProviderA, bikeProviderB, bikeProviderC;
+        Bike bike1, bike2;
+        User user1;
 
-        // data for creating booking
-        Booking actual = controller.makeBooking(user1.getUserId(), quote1, details1);
-        Booking expected = new Booking(controller, bikeProvider1.getId(), bikeIDs,
-            new DateRange(query1.getStartDate(), query1.getEndDate()), bikeProvider1.getId(),
-            user1.getAddressOfCustomer(), new BigDecimal(120), bike1.getReplacementValue());
-        assertEquals(expected.getBikeProviderID(), actual.getBikeProviderID());
-        assertEquals(expected.getReturnShopID(), actual.getReturnShopID());
-        assertEquals(expected.getAmountPaid(), actual.getAmountPaid());
-        assertEquals(expected.getDeposit(), actual.getDeposit());
-        assertEquals(expected.getDeliveryAddress(), actual.getDeliveryAddress());
-    }
+        @BeforeEach
+        void beforeEach() throws Exception {
+            user1 = new User("", "", "", new Location("EH17865", ""), "");
+            userManager.addUser(user1);
 
-    @Test
-    void makeBookingWithoutConsentTest() {
-        BookingDetails details1 = new BookingDetails(user1.getAddressOfCustomer(), bikeProvider1.getId(), false);
-        Collection<Integer> bikeIDs = new ArrayList<>();
-        bikeIDs.add(bike1.getBikeId());
-        Quote quote1 = new Quote(bikeProvider1.getId(), bike1.getReplacementValue(), new BigDecimal(120),
-            new DateRange(query1.getStartDate(), query1.getEndDate()), bikeIDs);
+            bikeProviderA = new BikeProvider("", new Location("EH165AJ", ""), "",
+                new HashMap<>(), BigDecimal.valueOf(0.1));
+            bikeProviderA.setRentalPrice(BikeType.getBikeType("Bike1"), BigDecimal.valueOf(50));
+            bikeProviderA.setRentalPrice(BikeType.getBikeType("Bike2"), BigDecimal.valueOf(70));
+            bike1 = new Bike(BikeType.getBikeType("Bike1"), bikeProviderA.getId(), LocalDate.of(2007, 3, 27));
+            bike2 = new Bike(BikeType.getBikeType("Bike2"), bikeProviderA.getId(), LocalDate.of(2009, 3, 27));
+            bikeProviderA.addBike(bike1);
+            bikeProviderA.addBike(bike2);
 
-        // data for creating booking
-        Booking booking = controller.makeBooking(user1.getUserId(), quote1, details1);
-        assertNull(booking);
-    }
+            bikeProviderB = new BikeProvider("", new Location("EH165AJ", ""), "",
+                new HashMap<>(), BigDecimal.valueOf(0.15));
 
-    @Test
-    void returnBikeToOriginalProvider() {
-        bike1.setStatus(BikeStatus.RENTED);
-        bike1.returnToShop(bikeProvider1.getId());
-        assertEquals(BikeStatus.IN_STORE, bike1.getStatus());
-    }
+            bikeProviderC = new BikeProvider("", new Location("EH165AJ", ""), "",
+                new HashMap<>(), BigDecimal.valueOf(0.2));
 
-    @Test
-    void returnBikeToPartner() {
-        bike1.setStatus(BikeStatus.RENTED);
-        bikeProvider1.addPartner(bikeProvider2.getId());
-        bike1.returnToShop(bikeProvider2.getId());
-        assertEquals(BikeStatus.RETURNED_PARTNER, bike1.getStatus());
+            bikeProviderA.addPartner(bikeProviderB.getId());
+            bikeProviderB.addPartner(bikeProviderA.getId());
+
+            quote = new Quote(bikeProviderA.getId(), BigDecimal.TEN, BigDecimal.ONE,
+                new DateRange(LocalDate.now(), LocalDate.now().plusDays(10)),
+                new HashSet<>() {{
+                    add(bike1.getBikeId());
+                    add(bike2.getBikeId());
+                }});
+
+            bikeProviderManager.addBikeProvider(bikeProviderA);
+            bikeProviderManager.addBikeProvider(bikeProviderB);
+            bikeProviderManager.addBikeProvider(bikeProviderC);
+        }
+
+
+        @Test
+        void returnBikeToOriginalProvider() {
+            Booking booking = controller.makeBooking(user1.getUserId(), quote, new BookingDetails(
+                null, bikeProviderA.getId(), true));
+
+            bike1.setStatus(BikeStatus.RENTED);
+            bike2.setStatus(BikeStatus.RENTED);
+            controller.returnOrder(booking.getOrderID());
+            assertEquals(BikeStatus.IN_STORE, bike1.getStatus());
+            assertEquals(BikeStatus.IN_STORE, bike2.getStatus());
+            assertEquals(DepositStatus.RETURNED, booking.getDepositStatus());
+            assertEquals(BookingStatus.COMPLETED, booking.getBookingStatus());
+        }
+
+        @Test
+        void returnBikeToPartner() {
+            Booking booking = controller.makeBooking(user1.getUserId(), quote, new BookingDetails(
+                null, bikeProviderB.getId(), true));
+
+            bike1.setStatus(BikeStatus.RENTED);
+            bike2.setStatus(BikeStatus.RENTED);
+            controller.returnOrder(booking.getOrderID());
+            assertEquals(BikeStatus.RETURNED_PARTNER, bike1.getStatus());
+            assertEquals(BikeStatus.RETURNED_PARTNER, bike2.getStatus());
+            assertEquals(DepositStatus.RETURNED, booking.getDepositStatus());
+            assertEquals(BookingStatus.COMPLETED_PARTNER, booking.getBookingStatus());
+        }
+
+        @Test
+        void returnBikeToNotPartner() {
+            Booking booking = controller.makeBooking(user1.getUserId(), quote, new BookingDetails(
+                null, bikeProviderC.getId(), true));
+            bike1.setStatus(BikeStatus.RENTED);
+            bike2.setStatus(BikeStatus.RENTED);
+            assertThrows(CannotReturnToNotPartnerException.class, () -> controller.returnOrder(booking.getOrderID()));
+        }
     }
 
 }

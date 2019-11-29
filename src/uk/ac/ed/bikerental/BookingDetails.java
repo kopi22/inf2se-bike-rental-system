@@ -6,7 +6,7 @@ public class BookingDetails {
 	private final int returnShopID;
 	private final boolean consentConfirmation;
 	
-	public BookingDetails(Location deliveryAddress,int returnShopID, boolean consentConfirmation ) {
+	public BookingDetails(Location deliveryAddress, int returnShopID, boolean consentConfirmation) {
 		this.deliveryAddress=deliveryAddress;
 		this.returnShopID=returnShopID;
 		this.consentConfirmation=consentConfirmation;

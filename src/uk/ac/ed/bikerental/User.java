@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 public class User {
+	static private int nextId = 1;
 	private int customerID;
 	private Controller controller;
 	private String email;
@@ -15,8 +16,8 @@ public class User {
 
 	private Collection<Integer> bookingIDs;
 
-	public User(int customerID,String email,String firstName,String secondName,Location addressOfCustomer, String phoneNumber) {
-		this.customerID = customerID;
+	public User(String email,String firstName,String secondName,Location addressOfCustomer, String phoneNumber) {
+		this.customerID = nextId++;
 		this.email = email;
 		this.firstName = firstName;
 		this.secondName = secondName;

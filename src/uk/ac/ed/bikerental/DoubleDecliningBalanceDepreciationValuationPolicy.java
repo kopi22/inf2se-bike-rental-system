@@ -7,7 +7,7 @@ public class DoubleDecliningBalanceDepreciationValuationPolicy implements Valuat
 
     private final BigDecimal depreciationRate;
 
-    DoubleDecliningBalanceDepreciationValuationPolicy(BigDecimal depreciationRate) {
+    public DoubleDecliningBalanceDepreciationValuationPolicy(BigDecimal depreciationRate) {
         this.depreciationRate = depreciationRate;
     }
 

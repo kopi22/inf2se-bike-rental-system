@@ -55,7 +55,7 @@ public class Booking implements Deliverable {
 		return depositStatus;
 	}
 
-	private final int orderID;
+    private final int orderID;
     private final Collection<Integer> orderedBikesIDs;
     private DateRange dateRange;
     private int returnShopID;
