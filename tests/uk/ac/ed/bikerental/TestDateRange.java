@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 class TestDateRange {
     private DateRange dateRange1, dateRange2, dateRange3;
 
+    //before each test setup environment
     @BeforeEach
     void setUp() throws Exception {
         // Setup resources before each test
@@ -32,6 +33,7 @@ class TestDateRange {
         assertEquals(3, this.dateRange3.toYears());
     }
 
+    //test whether overlap function returns correct result if dateranges overlap
     @Test
     void testOverlapsTrue() {
         oneSidedOverlap();
@@ -39,6 +41,7 @@ class TestDateRange {
     }
 
     @Test
+    //test whether correct result is returned if 2 places do not overlap
     void testOverlapsFalse() {
         LocalDate startA = LocalDate.of(2019, 3, 27);
         LocalDate endA = LocalDate.of(2019, 4, 27);
@@ -61,6 +64,7 @@ class TestDateRange {
     }
 
 
+    //test overlap if one daterange is contained in another
     void containedOverlap() {
         LocalDate startA = LocalDate.of(2018, 1, 1);
         LocalDate endA = LocalDate.of(2019, 1, 1);
@@ -75,7 +79,7 @@ class TestDateRange {
         assertTrue(rangeA.overlaps(rangeA));
     }
 
-
+    //check when dateranges overlap from one side
     void oneSidedOverlap() {
         LocalDate startA = LocalDate.of(2019, 3, 27);
         LocalDate endA = LocalDate.of(2019, 4, 27);

@@ -15,6 +15,7 @@ class LinearDepreciationValuationPolicyTest {
 
 
   @BeforeEach
+  //setup environment
   void setUp() throws Exception {
     BikeType.addType("BIKE", BigDecimal.valueOf(900.0));
     BikeType bikeType = BikeType.getBikeType("BIKE");
@@ -26,6 +27,7 @@ class LinearDepreciationValuationPolicyTest {
   }
 
   @Test
+  //test that calculating deposit for a bike with a date before bike's production date returns null
   void testDepositBeforeBikeProduction() {
     LocalDate date = LocalDate.of(2010, 1, 1);
     BigDecimal value = valuationPolicy.calculateValue(bike, date);
@@ -34,6 +36,7 @@ class LinearDepreciationValuationPolicyTest {
   }
 
  	@Test
+ 	//test that deposit is calculated as expected by the formula
 	void testDepositCalculation() {
     LocalDate date = LocalDate.of(2018, 9, 1);
     BigDecimal value = valuationPolicy.calculateValue(bike, date);
@@ -42,12 +45,14 @@ class LinearDepreciationValuationPolicyTest {
 	}
 
   @Test
+  //test that if no bike is provided as an argument to calculateValue function then exception is thrown
   void testNoBikeProvided() {
     LocalDate date = LocalDate.of(2018, 9, 1);
     assertThrows(AssertionError.class, () -> valuationPolicy.calculateValue(null, date));
   }
 
   @Test
+  //test that if no date is provided as an argument to calculateValue function then exception is thrown
   void testNoDateProvided() {
     assertThrows(AssertionError.class, () -> valuationPolicy.calculateValue(bike, null));
   }
