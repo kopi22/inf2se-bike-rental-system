@@ -31,12 +31,14 @@ public class SystemTests {
     Query query1;
     User user1, user2;
 
+    //setup environment before testing
     @BeforeEach
     void setUp() throws Exception {
         // Setup mock delivery service before each tests
         DeliveryServiceFactory.setupMockDeliveryService();
 
 
+        //create objects for testing, set up states
         BikeType.addType("Bike1", new BigDecimal("1000"));
         BikeType.addType("Bike2", new BigDecimal("1400"));
         BikeType.addType("Bike3", new BigDecimal("800"));
@@ -108,11 +110,13 @@ public class SystemTests {
         controller = new Controller(DeliveryServiceFactory.getDeliveryService(), bikeProviderManager, userManager);
     }
 
+    //testing Get Quotes use case
     @Nested
     @DisplayName("Tests for Get Quotes Use Case")
     class GetQuotesUseCase {
 
-        @Test
+        //test the case when there are no quotes available in requested range - should return empty list
+    	@Test
         void testOutsideRange() {
             Collection<Quote> quotes = controller.getQuotes(new Query(new HashMap<>() {{
                     put("Bike2", 1);
@@ -125,6 +129,7 @@ public class SystemTests {
             assertTrue(quotes.isEmpty());
         }
 
+    	//test the case when there is 1 requested BikeType in available range - success - should return list of quotes
         @Test
         void testInsideRangeOneBikeType() {
             Collection<Quote> quotes = controller.getQuotes(new Query(new HashMap<>() {{
@@ -142,6 +147,7 @@ public class SystemTests {
                 ((Quote) (quotes.toArray()[0])).getDeposit().stripTrailingZeros());
         }
 
+        //test request for multiple BikeTypes in available range - success - should return list of quotes
         @Test
         void testInsideRangeTwoBikeTypes() {
             Collection<Quote> quotes = controller.getQuotes(new Query(new HashMap<>() {{
@@ -161,6 +167,7 @@ public class SystemTests {
         }
 
         @Test
+        //test case when there is no available Quote retrieved for given request - should return 0 quotes
         void noAvailableQuote() {
             Collection<Quote> quotes = controller.getQuotes(new Query(new HashMap<>() {{
                     put("Bike2", 4);
@@ -175,6 +182,7 @@ public class SystemTests {
         }
     }
 
+    // test Quotes with custom valuation policies
     @Nested
     @DisplayName("Testing Getting Quotes with Different Valuation Policies")
     class QuotesWithCustomValuationPolicies {
@@ -183,6 +191,7 @@ public class SystemTests {
         BikeProviderManager bikeProviderManager;
         UserManager userManager;
 
+        //setup environment
         @BeforeEach
         void setUp() {
             bikeProviderManager = new BikeProviderManager();
@@ -199,6 +208,7 @@ public class SystemTests {
         }
 
         @Test
+        //test use case Get Quotes with Linear Valuation Policy
         void testQuotesWithLinearValuationPolicy() {
             Collection<Quote> quotes = controller.getQuotes(new Query(new HashMap<>() {{
                     put("Bike1", 1);
@@ -214,6 +224,7 @@ public class SystemTests {
         }
 
         @Test
+        //test use case Get Quotes with Double Declining Valuation Policy
         void testQuotesWithDoubleDecliningValuationPolicy() {
             Collection<Quote> quotes = controller.getQuotes(new Query(new HashMap<>() {{
                     put("Bike3", 1);
@@ -231,6 +242,7 @@ public class SystemTests {
 
     @Nested
     @DisplayName("Tests for Make Booking Use Case")
+    //test use case Make Booking - successful 
     class MakeBookingUseCase {
 
         Collection<Integer> bikeIDs;
@@ -289,6 +301,7 @@ public class SystemTests {
 
     @Nested
     @DisplayName("Tests for Return Bike Use Case")
+    // test Return Bikes use case
     class ReturnBikeUseCase {
 
         Quote quote;
@@ -297,6 +310,7 @@ public class SystemTests {
         User user1;
 
         @BeforeEach
+        //setup environment before testing
         void beforeEach() throws Exception {
             user1 = new User("", "", "", new Location("EH17865", ""), "");
             userManager.addUser(user1);
@@ -333,6 +347,7 @@ public class SystemTests {
 
 
         @Test
+        //tests returning bike to original bike provider
         void returnBikeToOriginalProvider() {
             Booking booking = controller.makeBooking(user1.getUserId(), quote, new BookingDetails(
                 null, bikeProviderA.getId(), true));
@@ -347,6 +362,7 @@ public class SystemTests {
         }
 
         @Test
+       //tests returning bike to a partner 
         void returnBikeToPartner() {
             Booking booking = controller.makeBooking(user1.getUserId(), quote, new BookingDetails(
                 null, bikeProviderB.getId(), true));
@@ -361,6 +377,7 @@ public class SystemTests {
         }
 
         @Test
+        //tests if returning bike to a bike provider B who is not a partner of bike provider A fails 
         void returnBikeToNotPartner() {
             Booking booking = controller.makeBooking(user1.getUserId(), quote, new BookingDetails(
                 null, bikeProviderC.getId(), true));

@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 public class User {
+	
 	static private int nextId = 1;
 	private int customerID;
 	private Controller controller;
@@ -56,6 +57,7 @@ public class User {
 	}
 	
 
+	//add booking to the list of bookingIDs
 	public void addBooking(int bookingID) {
 		assert bookingID > 0;
 
