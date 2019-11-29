@@ -68,7 +68,7 @@ public class SystemTests {
         bikeProvider1.setRentalPrice(bikeType1, BigDecimal.valueOf(100));
         bikeProvider1.setRentalPrice(bikeType2, BigDecimal.valueOf(200));
 
-        bike3 = new Bike(BikeType.getBikeType("Bike3"), bikeProvider2.getId(), LocalDate.of(2014, 1,2));
+        bike3 = new Bike(bikeType3, bikeProvider2.getId(), LocalDate.of(2014, 1,2));
         bikeProvider2.addBike(bike3);
         bikeProvider2.setRentalPrice(bikeType3, BigDecimal.valueOf(300));
         bikeProviderManager.addBikeProvider(bikeProvider1);
@@ -210,7 +210,7 @@ public class SystemTests {
         @Test
         void testQuotesWithDoubleDecliningValuationPolicy() {
             Collection<Quote> quotes = controller.getQuotes(new Query(new HashMap<>() {{
-                    put("Bike1", 3);
+                    put("Bike3", 1);
                 }},
                     LocalDate.of(2020, 6, 1),
                     LocalDate.of(2020, 6, 4),
@@ -218,7 +218,7 @@ public class SystemTests {
             );
 
             assertEquals(1, quotes.size());
-            assertEquals(BigDecimal.valueOf(500).stripTrailingZeros(),
+            assertEquals(new BigDecimal("209.7152").stripTrailingZeros(),
                 ((Quote) (quotes.toArray()[0])).getDeposit().stripTrailingZeros());
         }
     }
