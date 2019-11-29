@@ -6,6 +6,7 @@ import org.junit.jupiter.api.*;
 class TestLocation {
   Location locationA, locationB, locationC, locationD, locationE, locationF;
 
+  //setup environment
   @BeforeEach
   void setUp() throws Exception {
     locationA = new Location("EH165AJ", "");
@@ -17,6 +18,7 @@ class TestLocation {
     locationF = new Location("H87609", "");
   }
 
+  //test whether isNearTo function outputs expected results when 2 locations are near
   @Test
   void isNearTo() {
     // Tests symmetry
@@ -30,6 +32,7 @@ class TestLocation {
     assertTrue(locationA.isNearTo(locationA));
   }
 
+  // test whether isNearTo function outputs expected results when 2 locations are not near
   @Test
   void isNotNearTo() {
     assertFalse(locationA.isNearTo(locationD));

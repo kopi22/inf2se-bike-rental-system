@@ -47,10 +47,12 @@ public class Bike {
         return productionDate;
     }
 
+    //book a Bike for a certain date range
     public void book(DateRange dateRange) {
         reservationDates.put(dateRange.getStart(), dateRange.getEnd());
     }
 
+    //check whether Bike is available
     public boolean isAvailable(DateRange dateRange) {
         LocalDate bookingStart =  dateRange.getStart();
         LocalDate bookingEnd = dateRange.getEnd();
@@ -73,6 +75,7 @@ public class Bike {
         this.status = status;
     }
 
+    //return bike to the original shop or the partner shop
     public void returnToShop(int returnShopId) {
         locationHistory.add(returnShopId);
         if (returnShopId == ownerId) {
@@ -82,9 +85,5 @@ public class Bike {
         }
     }
     
-   /* //bike returned to a partner
-    public void returnedToPartner(Location partnerAddress) {
-    	this.setStatus(BikeStatus.RETURNED_PARTNER);
-    	
-    }*/
+   
 }

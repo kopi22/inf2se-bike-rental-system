@@ -11,6 +11,7 @@ class TestDateRange {
     private DateRange dateRange1, dateRange2, dateRange3;
 
     @BeforeEach
+    //setup the environment
     void setUp() throws Exception {
         // Setup resources before each test
         this.dateRange1 = new DateRange(LocalDate.of(2019, 1, 7),
@@ -32,12 +33,14 @@ class TestDateRange {
         assertEquals(3, this.dateRange3.toYears());
     }
 
+    //test whether all overlaps work
     @Test
     void testOverlapsTrue() {
     	oneSidedOverlap();
     	containedOverlap();
     }
 
+    //test non-overlapping date ranges
     @Test
 	void testOverlapsFalse() {
 		LocalDate startA = LocalDate.of(2019, 3, 27);
@@ -61,7 +64,7 @@ class TestDateRange {
 		
 	}
 	
-	
+	//test contained overlap
 	void containedOverlap() {
 		LocalDate startA = LocalDate.of(2018, 1, 1);
 		LocalDate endA = LocalDate.of(2019, 1, 1);
@@ -71,9 +74,6 @@ class TestDateRange {
 		LocalDate endB = LocalDate.of(2018, 6, 27);
 		DateRange rangeB = new DateRange(startB, endB);
 		
-		// LocalDate startC = LocalDate.of(2018, 5, 1);
-		// LocalDate endC = LocalDate.of(2018, 5, 30);
-		// DateRange rangeC = new DateRange(startC, endC);
 		
 		assertTrue(rangeA.overlaps(rangeB));
 		assertTrue(rangeB.overlaps(rangeA));
@@ -81,6 +81,7 @@ class TestDateRange {
 	}
 	
 	
+	//test one-sided overlap
 	void oneSidedOverlap() {
 		LocalDate startA = LocalDate.of(2019, 3, 27);
 		LocalDate endA = LocalDate.of(2019, 4, 27);

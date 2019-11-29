@@ -168,14 +168,7 @@ public class BikeProvider {
     public void addPartner(int partnerId) {
         partnerIds.add(partnerId);
     }
-/*
-    //process partners bikes
-    public void returnPartnerBikes(Collection<Integer> bikeIDs, Location partnerAddress) {
-    	for (Integer bikeID : bikeIDs) {
-    		bikes.get(bikeID).returnedToPartner(partnerAddress);
-    	}
 
-    }*/
     
     	
 }
