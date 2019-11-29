@@ -24,7 +24,7 @@ public class DoubleDecliningBalanceDepreciationValuationPolicy implements Valuat
         BigDecimal depreciationRateMulTwo = depreciationRate.multiply(BigDecimal.valueOf(2));
 
         // Implementing the formula for deposit value*(1-2*depreciation)^age
-        BigDecimal result = replacementValue.multiply((BigDecimal.valueOf(1).subtract(depreciationRateMulTwo)
+        BigDecimal result = replacementValue.multiply((BigDecimal.ONE.subtract(depreciationRateMulTwo)
                 .pow(bikeAge.intValue())));
 
         return result.compareTo(BigDecimal.ZERO) > 0 ? result : BigDecimal.ZERO;

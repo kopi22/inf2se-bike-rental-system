@@ -20,7 +20,7 @@ public class SystemTests {
     UserManager userManager;
     BikeType bikeType1, bikeType2, bikeType3;
     BikeProvider bikeProvider1, bikeProvider2;
-    Bike bike1, bike2;
+    Bike bike1, bike2, bike3;
     Map<String, Integer> bikesInQueryMap = new HashMap<>();
     Query query1;
     User user1, user2;
@@ -30,11 +30,10 @@ public class SystemTests {
         // Setup mock delivery service before each tests
         DeliveryServiceFactory.setupMockDeliveryService();
 
-        // Put your test setup here
 
-        BikeType.addType("Bike1", BigDecimal.valueOf(1000.0));
-        BikeType.addType("Bike2", BigDecimal.valueOf(1400.0));
-        BikeType.addType("Bike3", BigDecimal.valueOf(800.0));
+        BikeType.addType("Bike1", new BigDecimal("1000"));
+        BikeType.addType("Bike2", new BigDecimal("1400"));
+        BikeType.addType("Bike3", new BigDecimal("800"));
 
         bikeType1 = BikeType.getBikeType("Bike1");
         bikeType2 = BikeType.getBikeType("Bike2");
@@ -59,15 +58,19 @@ public class SystemTests {
 
 
         bikeProvider1 = new BikeProvider("CoolBikes", new Location("EH165AJ", "Lawsons"), "0914320650", null,
-            new BigDecimal(0.87));
+            new LinearDepreciationValuationPolicy(new BigDecimal("0.1")));
         bikeProvider2 = new BikeProvider("SportyBikes", new Location("EH189TZ", "Hughs"), "0918822108", null,
-            new BigDecimal(0.95));
-        bike1 = new Bike(BikeType.getBikeType("Bike1"), bikeProvider1.getId(), LocalDate.of(2007, 3, 27));
-        bike2 = new Bike(BikeType.getBikeType("Bike2"), bikeProvider1.getId(), LocalDate.of(2012, 6, 2));
+            new DoubleDecliningBalanceDepreciationValuationPolicy(new BigDecimal("0.1")));
+        bike1 = new Bike(bikeType1, bikeProvider1.getId(), LocalDate.of(2015, 3, 27));
+        bike2 = new Bike(bikeType2, bikeProvider1.getId(), LocalDate.of(2012, 6, 2));
         bikeProvider1.addBike(bike1);
         bikeProvider1.addBike(bike2);
         bikeProvider1.setRentalPrice(bikeType1, BigDecimal.valueOf(100));
         bikeProvider1.setRentalPrice(bikeType2, BigDecimal.valueOf(200));
+
+        bike3 = new Bike(BikeType.getBikeType("Bike3"), bikeProvider2.getId(), LocalDate.of(2014, 1,2));
+        bikeProvider2.addBike(bike3);
+        bikeProvider2.setRentalPrice(bikeType3, BigDecimal.valueOf(300));
         bikeProviderManager.addBikeProvider(bikeProvider1);
         bikeProviderManager.addBikeProvider(bikeProvider2);
 
@@ -163,6 +166,60 @@ public class SystemTests {
             );
 
             assertEquals(0, quotes.size());
+        }
+    }
+
+    @Nested
+    @DisplayName("Testing Getting Quotes with Different Valuation Policies")
+    class QuotesWithCustomValuationPolicies {
+
+        Controller controller;
+        BikeProviderManager bikeProviderManager;
+        UserManager userManager;
+
+        @BeforeEach
+        void setUp() {
+            bikeProviderManager = new BikeProviderManager();
+            userManager = new UserManager();
+
+            bikeProviderManager.addBikeProvider(bikeProvider1);
+            bikeProviderManager.addBikeProvider(bikeProvider2);
+
+            controller = new Controller(
+                DeliveryServiceFactory.getDeliveryService(),
+                bikeProviderManager,
+                userManager
+            );
+        }
+
+        @Test
+        void testQuotesWithLinearValuationPolicy() {
+            Collection<Quote> quotes = controller.getQuotes(new Query(new HashMap<>() {{
+                    put("Bike1", 1);
+                }},
+                LocalDate.of(2020, 6, 1),
+                LocalDate.of(2020, 6, 4),
+                new Location("EH165AY", ""))
+            );
+
+            assertEquals(1, quotes.size());
+            assertEquals(BigDecimal.valueOf(500).stripTrailingZeros(),
+                ((Quote) (quotes.toArray()[0])).getDeposit().stripTrailingZeros());
+        }
+
+        @Test
+        void testQuotesWithDoubleDecliningValuationPolicy() {
+            Collection<Quote> quotes = controller.getQuotes(new Query(new HashMap<>() {{
+                    put("Bike1", 3);
+                }},
+                    LocalDate.of(2020, 6, 1),
+                    LocalDate.of(2020, 6, 4),
+                    new Location("EH165AY", ""))
+            );
+
+            assertEquals(1, quotes.size());
+            assertEquals(BigDecimal.valueOf(500).stripTrailingZeros(),
+                ((Quote) (quotes.toArray()[0])).getDeposit().stripTrailingZeros());
         }
     }
 
