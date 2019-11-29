@@ -18,14 +18,12 @@ public class SystemTests {
     Controller controller;
     BikeProviderManager bikeProviderManager;
     UserManager userManager;
-    BikeProvider bikeProvider1;
-    BikeProvider bikeProvider2;
-    Bike bike1;
-    Bike bike2;
+    BikeType bikeType1, bikeType2, bikeType3;
+    BikeProvider bikeProvider1, bikeProvider2;
+    Bike bike1, bike2;
     Map<String, Integer> bikesInQueryMap = new HashMap<>();
     Query query1;
-    User user1;
-    User user2;
+    User user1, user2;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -38,12 +36,13 @@ public class SystemTests {
         BikeType.addType("Bike2", BigDecimal.valueOf(1400.0));
         BikeType.addType("Bike3", BigDecimal.valueOf(800.0));
 
-        BikeType bikeType1, bikeType2, bikeType3;
         bikeType1 = BikeType.getBikeType("Bike1");
         bikeType2 = BikeType.getBikeType("Bike2");
         bikeType3 = BikeType.getBikeType("Bike3");
 
         bikeProviderManager = new BikeProviderManager();
+        userManager = new UserManager();
+
 
         BikeProvider bikeProviderA = new BikeProvider("", new Location("EH165AJ", ""), "",
             new HashMap<>(), BigDecimal.valueOf(0.1));
@@ -72,13 +71,23 @@ public class SystemTests {
         bikeProviderManager.addBikeProvider(bikeProvider1);
         bikeProviderManager.addBikeProvider(bikeProvider2);
 
-        query1 = new Query(new HashMap<>(), LocalDate.of(2019, 6, 28), LocalDate.of(2019, 7, 28),
-            new Location("EH254GU", "St Leonards"));
-        user1 = new User("henryk@gmail.com", "Henryk", "Hobohobo", new Location("EH165AJ", "Akababa"),
+        query1 = new Query(new HashMap<>(),
+            LocalDate.of(2019, 6, 28),
+            LocalDate.of(2019, 7, 28),
+            new Location("EH254GU", "St Leonards")
+        );
+
+        user1 = new User("henryk@gmail.com",
+            "Henryk",
+            "Hobohobo",
+            new Location("EH165AJ", "Akababa"),
             "09875456796");
-        user2 = new User("Alica@gmail.com", "Alica", "Persey", new Location("EH876TZ", "Mayeston"),
+        user2 = new User("Alica@gmail.com",
+            "Alica",
+            "Persey",
+            new Location("EH876TZ", "Mayeston"),
             "0905666080");
-        userManager = new UserManager();
+
         userManager.addUser(user1);
         userManager.addUser(user2);
 
@@ -96,41 +105,64 @@ public class SystemTests {
 
         @Test
         void testOutsideRange() {
-            Collection<Quote> quotes = controller.getQuotes(new Query(new HashMap<>() {
-                {
+            Collection<Quote> quotes = controller.getQuotes(new Query(new HashMap<>() {{
                     put("Bike2", 1);
-                }
-            }, LocalDate.of(2010, 6, 1), LocalDate.of(2010, 6, 3), new Location("G12312", "")));
+                }},
+                LocalDate.of(2020, 6, 1),
+                LocalDate.of(2020, 6, 3),
+                new Location("G12312", ""))
+            );
+
             assertTrue(quotes.isEmpty());
         }
 
         @Test
         void testInsideRangeOneBikeType() {
-            Collection<Quote> quotes = controller.getQuotes(new Query(new HashMap<>() {
-                {
-                    put("Bike2", 1);
-                }
-            }, LocalDate.of(2010, 6, 1), LocalDate.of(2010, 6, 3), new Location("EH165AY", "")));
-            assertEquals(2, quotes.size());
-            assertEquals(BigDecimal.valueOf(80.0).stripTrailingZeros(),
+            Collection<Quote> quotes = controller.getQuotes(new Query(new HashMap<>() {{
+                    put("Bike3", 3);
+                }},
+                LocalDate.of(2020, 6, 1),
+                LocalDate.of(2020, 6, 4),
+                new Location("EH165AY", ""))
+            );
+
+            assertEquals(1, quotes.size());
+            assertEquals(BigDecimal.valueOf(270.0).stripTrailingZeros(),
                 ((Quote) (quotes.toArray()[0])).getPrice().stripTrailingZeros());
-            assertEquals(BigDecimal.valueOf(140.0).stripTrailingZeros(),
+            assertEquals(BigDecimal.valueOf(240.0).stripTrailingZeros(),
                 ((Quote) (quotes.toArray()[0])).getDeposit().stripTrailingZeros());
         }
 
         @Test
-        void testInsideRangeOneTwoTypes() {
-            Collection<Quote> quotes = controller.getQuotes(new Query(new HashMap<>() {
-                {
+        void testInsideRangeTwoBikeTypes() {
+            Collection<Quote> quotes = controller.getQuotes(new Query(new HashMap<>() {{
                     put("Bike2", 1);
                     put("Bike3", 2);
-                }
-            }, LocalDate.of(2010, 6, 1), LocalDate.of(2010, 6, 3), new Location("EH165AY", "")));
+                }},
+                LocalDate.of(2020, 6, 1),
+                LocalDate.of(2020, 6, 3),
+                new Location("EH165AY", ""))
+            );
+
             assertEquals(1, quotes.size());
             assertEquals(BigDecimal.valueOf(200.0).stripTrailingZeros(),
                 ((Quote) (quotes.toArray()[0])).getPrice().stripTrailingZeros());
             assertEquals(BigDecimal.valueOf(300.0).stripTrailingZeros(),
                 ((Quote) (quotes.toArray()[0])).getDeposit().stripTrailingZeros());
+        }
+
+        @Test
+        void noAvailableQuote() {
+            Collection<Quote> quotes = controller.getQuotes(new Query(new HashMap<>() {{
+                    put("Bike2", 4);
+                    put("Bike3", 2);
+                }},
+                LocalDate.of(2020, 6, 1),
+                LocalDate.of(2020, 6, 3),
+                new Location("EH165AY", ""))
+            );
+
+            assertEquals(0, quotes.size());
         }
     }
 

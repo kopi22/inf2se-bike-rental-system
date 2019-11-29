@@ -21,12 +21,13 @@ public class DoubleDecliningBalanceDepreciationValuationPolicy implements Valuat
         }
         BigDecimal bikeAge = BigDecimal.valueOf(new DateRange(productionDate, reservationStartDate).toYears());
         BigDecimal replacementValue = bike.getReplacementValue();
-        BigDecimal depreciationRateMulTwo = depreciationRate.multiply(BigDecimal.valueOf(2.0));
+        BigDecimal depreciationRateMulTwo = depreciationRate.multiply(BigDecimal.valueOf(2));
 
         // Implementing the formula for deposit value*(1-2*depreciation)^age
-
-        return replacementValue.multiply((BigDecimal.valueOf(1.0).subtract(depreciationRateMulTwo)
+        BigDecimal result = replacementValue.multiply((BigDecimal.valueOf(1).subtract(depreciationRateMulTwo)
                 .pow(bikeAge.intValue())));
+
+        return result.compareTo(BigDecimal.ZERO) > 0 ? result : BigDecimal.ZERO;
     }
 
 }

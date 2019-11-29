@@ -17,7 +17,6 @@ public class LinearDepreciationValuationPolicy implements ValuationPolicy {
 		assert bike != null && reservationsStartDate != null;
 
 		LocalDate productionDate = bike.getProductionDate();
-
 		if (productionDate.isAfter(reservationsStartDate)) {
 			return null;
 		}
@@ -27,8 +26,9 @@ public class LinearDepreciationValuationPolicy implements ValuationPolicy {
 
 		// Implementing the formula for discount (age*depreciation*value)
 		BigDecimal discount = bikeAge.multiply(depreciationRate).multiply(replacementValue);
+		BigDecimal result = replacementValue.subtract(discount);
 
-		return replacementValue.subtract(discount);
+		return result.compareTo(BigDecimal.ZERO) > 0 ? result : BigDecimal.ZERO;
 	}
 
 }
