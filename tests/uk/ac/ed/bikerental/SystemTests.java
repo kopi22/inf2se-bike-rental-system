@@ -116,7 +116,7 @@ public class SystemTests {
     class GetQuotesUseCase {
 
         //test the case when there are no quotes available in requested range - should return empty list
-    	@Test
+    	  @Test
         void testOutsideRange() {
             Collection<Quote> quotes = controller.getQuotes(new Query(new HashMap<>() {{
                     put("Bike2", 1);
@@ -129,7 +129,8 @@ public class SystemTests {
             assertTrue(quotes.isEmpty());
         }
 
-    	//test the case when there is 1 requested BikeType in available range - success - should return list of quotes
+    	//test the case when there is 1 requested BikeType in available range
+      // - success - should return list of quotes
         @Test
         void testInsideRangeOneBikeType() {
             Collection<Quote> quotes = controller.getQuotes(new Query(new HashMap<>() {{

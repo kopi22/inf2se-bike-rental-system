@@ -39,6 +39,7 @@ public class BikeProvider {
         this.partnerIds = new HashSet<>();
         this.pricingPolicy = pricingPolicy;
         this.depositPolicy = depositPolicy;
+        this.bookingsIds = new HashSet<>();
     }
 
     public BikeProvider(String bikeProviderName, Location address, String phoneNumber,
